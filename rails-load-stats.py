@@ -230,8 +230,8 @@ class text_output():
         self.fill_result_table()
         print(f"there were {self.number_of_tasks} requests "
               f"taking {self.whole_time} ms "
-              f"(i.e. {self.whole_time/3600_000:.2} hours, "
-              f"i.e. {self.whole_time/3600_000/24:.2} days) in summary\n")
+              f"(i.e. {self.whole_time/3600_000:.2f} hours, "
+              f"i.e. {self.whole_time/3600_000/24:.2f} days) in summary\n")
         print("type                                                      "
               "count      min    max      avg     mean     sum     percentage")
         print("------------------------------------------------------------"
