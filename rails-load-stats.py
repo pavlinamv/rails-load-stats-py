@@ -283,12 +283,12 @@ class text_output():
 
 class make_progress_bar():
     todo: int
-    last_procent: int
+    last_tenth_of_procent: int
     done: int
     start: int
 
     def __init__(self, log_file_name: str) -> None:
-        self.last_procent = 0
+        self.last_tenth_of_procent = 0
         self.done = 0
         self.start = datetime.now()
         try:
@@ -304,23 +304,23 @@ class make_progress_bar():
     def print_bar(self):
         if (self.todo != 0):
             self.done += 1
-            procent = int(50 * (self.done / self.todo))
-            if (self.last_procent < procent):
-                bar = chr(9608) * procent + " " * (50 - procent)
+            tenth_of_procent = int(1000 * (self.done / self.todo))
+            if (self.last_tenth_of_procent < tenth_of_procent):
+                half_procent = int(tenth_of_procent/20)
+                bar = chr(9608) * half_procent + " " * (50 - half_procent)
                 now = datetime.now()
                 left = (self.todo - self.done) * (now - self.start) / self.done
-
                 sec = int(left.total_seconds())
                 if sec < 60:
-                    print(f"\r|{bar}| {procent*100/50:.2f}%"
-                          f"   Estimated time left: {format(sec+1)} sec",
+                    print(f"\r|{bar}| {tenth_of_procent/10:.1f} %"
+                          f"  Estimated time left: {format(sec+1)} sec       ",
                           end="\r")
                 else:
-                    print(f"\r|{bar}| {procent*100/50:.2f}%"
-                          f"   Estimated time left: {format(int(sec / 60))}"
-                          f" min {format(int(sec % 60)+1)} sec", end="\r")
+                    print(f"\r|{bar}| {tenth_of_procent/10:.1f} %"
+                          f"  Estimated time left: {format(int(sec / 60))}"
+                          f" min {format(int(sec % 60)+1)} sec    ", end="\r")
 
-            self.last_procent = procent
+            self.last_tenth_of_procent = tenth_of_procent
 
 
 def print_error_message():
