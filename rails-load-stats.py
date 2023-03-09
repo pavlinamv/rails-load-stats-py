@@ -40,6 +40,8 @@ IMPLICIT_STORT_TYPE = 7
 IMPLICIT_WITH_PLOTS = False
 IMPLICIT_PROGRESS_BAR = True
 
+PROGRESS_BAR_LENGTH = 30
+
 
 class extract_data_lines():
     open_processing_entries: list
@@ -306,8 +308,10 @@ class make_progress_bar():
             self.done += 1
             tenth_of_procent = int(1000 * (self.done / self.todo))
             if (self.last_tenth_of_procent < tenth_of_procent):
-                half_procent = int(tenth_of_procent/20)
-                bar = chr(9608) * half_procent + " " * (50 - half_procent)
+                half_procent = int((tenth_of_procent/1000)
+                                   * PROGRESS_BAR_LENGTH)
+                bar = (chr(9608) * half_procent + " "
+                       * (PROGRESS_BAR_LENGTH - half_procent))
                 now = datetime.now()
                 left = (self.todo - self.done) * (now - self.start) / self.done
                 sec = int(left.total_seconds())
