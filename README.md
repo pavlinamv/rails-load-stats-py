@@ -1,4 +1,4 @@
-rails-load-stats.py and candlepin-load-stats.py scripts for creating statistics. Both scripts work almost similarly.
+rails-load-stats.py and candlepin-load-stats.py scripts for creating statistics. Both scripts work quite similarly.
 
 ## rails-load-stats.py
 
@@ -64,6 +64,14 @@ mathplotlib
 
 
 ## candlepin-load-stats.py
+
+candlepin-load-stats.py is similar as rails-load-stats.py script. It processes a candlepin logfile to analyze where the load to the app comes from. It contains prints:
+- list of particular requests from the most busy time (processed with the most concurrency)
+- show progress bar during the input file processing
+
+It produces statistics about:
+- Particular requests: how many requests against each method were raised, how much (min/max/avg/sum) time these took, and what percentage of overall execution time was spent by processing the different types of requests.
+- Maximal level of concurrency: the peak number of requests that were processed in parallel.
 
 Example output:
 
