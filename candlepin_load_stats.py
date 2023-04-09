@@ -3,7 +3,7 @@ import sys
 import logging
 import statistics
 import uuid
-from progress_bar import make_progress_bar
+from progress_bar import MakeProgressBar
 
 LINE_TYPE_NO = 0
 LINE_TYPE_RESPONSE = 1
@@ -28,7 +28,9 @@ OPTIONS = {"1": (0, 0), "2": (0, 1), "3": (0, 2), "4": (0, 3),
 MASKED_WORDS = {"?": "...",
                 "/products/": "PRODUCT",
                 "/content/": "CONTENT",
-                "/jobs/": "JOBS"}
+                "/jobs/": "JOBID",
+                "/pools/": "POOL",
+                "/product/": "PRODUCT"}
 
 
 class ExtractDataLine:
@@ -56,7 +58,7 @@ class ExtractDataLine:
                     pass
                 todo = count + 1
         except Exception as file_exception:
-            logging.error(file_exception)
+            print(file_exception)
             return ERROR
         return todo
 
@@ -221,7 +223,7 @@ class ExtractDataLine:
         if number_of_log_file_lines == 0:
             print(f"Log file {log_file_name} is empty or can not be read.")
             return ERROR
-        progress = make_progress_bar(number_of_log_file_lines)
+        progress = MakeProgressBar(number_of_log_file_lines)
 
         try:
             with open(log_file_name, 'r') as file:
@@ -345,9 +347,8 @@ if __name__ == "__main__":
     try:
         from tabulate import tabulate
     except ModuleNotFoundError as error:
-        print("ERROR: Module 'tabulate' is not found!\n"
-              "Install python3 tabulate module, like e.g.:"
+        print("ERROR: Library 'tabulate' is not found!\n"
+              "Install python3 tabulate library, like e.g.:"
               "yum install python3-tabulate"
               "in Fedora.")
     main()
-

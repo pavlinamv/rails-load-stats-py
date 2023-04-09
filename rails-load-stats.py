@@ -6,16 +6,17 @@ from datetime import datetime
 import re
 import time
 import logging
+from progress_bar import MakeProgressBar
 
 COMPLETED = {'attributes': {2: "Completed"},
              'min_line_len': 6,
-             'reqest_id_index': 1,
+             'request_id_index': 1,
              'min_duration_index': 3,
              'time_unit_length': 2,
              }
 PROCESSING = {'attributes': {2: "Processing", 3: "by"},
               'min_line_len': 5,
-              'reqest_id_index': 1,
+              'request_id_index': 1,
               'communication_type_index': 4,
               'timestamp_index': 0,
               }
@@ -35,15 +36,15 @@ OPTIONS = {"1": (0, 1),
            "6": (0, 6),
            "7": (0, 7),
            "--with_plots": (1, True)}
-OPTION_ERROR = -1
-IMPLICIT_STORT_TYPE = 7
+ERROR = -1
+IMPLICIT_SORT_TYPE = 7
 IMPLICIT_WITH_PLOTS = False
 IMPLICIT_PROGRESS_BAR = True
 
 PROGRESS_BAR_LENGTH = 30
 
 
-class extract_data_lines():
+class ExtractDataLines:
     open_processing_entries: list
     max_open_proc_entries: list
     processing_entries_len: int
@@ -52,7 +53,7 @@ class extract_data_lines():
     line: list
     enable_plots: int
     plot_data: list
-    last_time: int
+    last_time: float
 
     def __init__(self, enable_plots: int) -> None:
         self.open_processing_entries = []
@@ -75,7 +76,7 @@ class extract_data_lines():
         if len(self.line) < minlen:
             return False
         for i, j in characteristic.items():
-            if (self.line[i] != j):
+            if self.line[i] != j:
                 return False
         return True
 
@@ -87,8 +88,8 @@ class extract_data_lines():
         return LINE_TYPE_NO
 
     def treat_processing_line(self) -> None:
-        if (len(self.line) >= PROCESSING['min_line_len']):
-            request_id = (self.line[PROCESSING['reqest_id_index']].
+        if len(self.line) >= PROCESSING['min_line_len']:
+            request_id = (self.line[PROCESSING['request_id_index']].
                           split("|"))[-1]
             communication_type = self.line[
                 PROCESSING['communication_type_index']].split(":")
@@ -101,10 +102,10 @@ class extract_data_lines():
                  self.compute_and_log_time(line_time)))
             self.processing_entries_len += 1
 
-            if (self.enable_plots):
+            if self.enable_plots:
                 self.plot_data.append(self.processing_entries_len)
 
-            if (self.max_proc_entries_len < self.processing_entries_len):
+            if self.max_proc_entries_len < self.processing_entries_len:
                 self.max_open_proc_entries = self.open_processing_entries.copy()
                 self.max_proc_entries_len += 1
 
@@ -121,6 +122,7 @@ class extract_data_lines():
             duration = int(
                 self.line[duration_position][:-COMPLETED['time_unit_length']])
         except Exception as ex:
+            print(ex)
             return UNFOUND_POSITION
         return duration
 
@@ -139,10 +141,10 @@ class extract_data_lines():
         else:
             duration_values_list.append(duration)
 
-    def treat_completted_line(self) -> None:
+    def treat_completed_line(self) -> None:
         for entry in self.open_processing_entries:
-            name_data = self.line[PROCESSING['reqest_id_index']]
-            name1_list = ((name_data)[:-1]).split("|")
+            name_data = self.line[PROCESSING['request_id_index']]
+            name1_list = (name_data[:-1]).split("|")
             if entry[0] == name1_list[-1]:
                 self.add_time_result(entry)
                 self.open_processing_entries.remove(entry)
@@ -151,8 +153,8 @@ class extract_data_lines():
 
     def treat_task_line(self) -> None:
         for entry in self.open_processing_entries:
-            name_data = self.line[PROCESSING['reqest_id_index']]
-            name1_list = ((name_data)[:-1]).split("|")
+            name_data = self.line[PROCESSING['request_id_index']]
+            name1_list = (name_data[:-1]).split("|")
             if entry[0] == name1_list[-1]:
                 self.open_processing_entries.remove(entry)
                 self.processing_entries_len -= 1
@@ -164,7 +166,7 @@ class extract_data_lines():
         if line_type == PROCESSING:
             self.treat_processing_line()
         if line_type == COMPLETED:
-            self.treat_completted_line()
+            self.treat_completed_line()
         if line_type == TASK:
             self.treat_task_line()
 
@@ -183,8 +185,23 @@ class extract_data_lines():
     def return_last_time(self) -> float:
         return self.last_time
 
+    @staticmethod
+    def number_of_lines(log_file_name: str):
+        """ Return number of lines of the input file
+    """
+        count = 0
+        try:
+            with open(log_file_name, 'r') as file:
+                for count, line in enumerate(file):
+                    pass
+                todo = count + 1
+        except Exception as file_exception:
+            print(file_exception)
+            return ERROR
+        return todo
 
-class text_output():
+
+class TextOutput:
     duration_values: list
     result_table: list
     whole_time: int
@@ -195,7 +212,8 @@ class text_output():
     def __init__(self, sorting_strategy: int) -> None:
         self.sorting_strategy = sorting_strategy
 
-    def write_date_time(self, text: str) -> None:
+    @staticmethod
+    def write_date_time(text: str) -> None:
         current_time = datetime.now()
         time_stamp = current_time.timestamp()
         date_time = datetime.fromtimestamp(time_stamp)
@@ -214,6 +232,7 @@ class text_output():
         self.result_table = []
         if (self.number_of_tasks != 0) and (self.whole_time != 0):
             for i in self.duration_values:
+                percentage = (sum(i[1]) / self.whole_time) * 100
                 self.result_table.append((i[0],
                                           len(i[1]),
                                           min(i[1]),
@@ -221,7 +240,7 @@ class text_output():
                                           int(statistics.mean(i[1])),
                                           int(statistics.median(i[1])),
                                           sum(i[1]),
-                                          (sum(i[1])/self.whole_time)*100))
+                                          round(percentage, 2)))
         self.result_table.sort(
             reverse=True, key=lambda x: x[self.sorting_strategy])
 
@@ -234,24 +253,23 @@ class text_output():
               f"taking {self.whole_time} ms "
               f"(i.e. {self.whole_time/3600_000:.2f} hours, "
               f"i.e. {self.whole_time/3600_000/24:.2f} days) in summary\n")
-        print("type                                                      "
-              "count      min    max      avg     mean     sum     percentage")
-        print("------------------------------------------------------------"
-              "------------------------------------------------------------")
-        for i in self.result_table:
-            print(f"{i[0]:58s}{i[1]:<10d}{i[2]:< 8d}{i[3]:<8d}{i[4]:< 8d}"
-                  f"{i[5]:< 9d}{i[6]:< 10d}{i[7]:7.2f}%")
+        self.result_table.sort(
+            reverse=True, key=lambda x: x[self.sorting_strategy])
+        col_names = [" action", "request_type", "count",
+                     "min", "max", "avg",
+                     "mean", "sum", "percentage"]
+        print(tabulate(self.result_table, headers=col_names))
 
     @staticmethod
     def write_max_concurrent_processing(max_open_proc_entries) -> None:
         print(f"\nMaximally {len(max_open_proc_entries)} concurrent "
-              "requsts when processing:")
-        print("Number     Time                    Request ID     Endpoint")
-        print("-----------------------------------------------------------"
-              "--------------------------------------------")
+              "requests when processing:")
         enumerate_entries = list(enumerate(max_open_proc_entries, 1))
+        concurrent_enries = []
         for (i, (j, k, l, m, n)) in enumerate_entries:
-            print(f"{i:<9d}  {l:23s} {j:15s}{k:40s}")
+            concurrent_enries.append((i, l, j, k))
+        col_names = ["Number", "Time", "Request ID", "Endpoint"]
+        print(tabulate(concurrent_enries, headers=col_names))
 
     @staticmethod
     def return_plot_data(plot_data) -> None:
@@ -267,65 +285,18 @@ class text_output():
 
     @staticmethod
     def write_open_processing_entries(open_entries, last_time: float) -> None:
-        if (len(open_entries) > 0):
-            print(f"\n{len(open_entries)} processing requsts are"
+        if len(open_entries) > 0:
+            print(f"\n{len(open_entries)} processing requests are"
                   f" not closed in the end of file:")
-            print("Number    Pending time (s)   Time stamp       Request "
-                  "       IDEndpoint")
-            print("------------------------------------------------------"
-                  "-----------------------------------------------------")
-            enumerate_entries = list(enumerate(open_entries, 1))
-            for (i, (j, k, l, m, n)) in enumerate_entries:
-                print(f"{i:<5d} {last_time-n:10.0f}         {l:20s} {j:15s}"
-                      f"{k:40s}")
-                print("")
+            concurent_enries = []
+            for (i, (j, k, l, m, n)) in list(enumerate(open_entries, 1)):
+                concurent_enries.append((i, last_time-n, l, j, k))
+            col_names = ["Number", " Pending time (s)", "Time stamp",
+                         "Request", "IDEndpoint"]
+            print(tabulate(concurent_enries, headers=col_names))
+
         else:
             print("\nNo processing requests are open in the end of file.\n")
-
-
-class make_progress_bar():
-    todo: int
-    last_tenth_of_procent: int
-    done: int
-    start: int
-
-    def __init__(self, log_file_name: str) -> None:
-        self.last_tenth_of_procent = 0
-        self.done = 0
-        self.start = datetime.now()
-        try:
-            with open(log_file_name, 'r') as file:
-                for count, line in enumerate(file):
-                    pass
-            self.todo = count+1
-        except Exception as file_exception:
-            print(file_exception)
-            print("The progress bar can not be created.")
-            self.todo = 0
-
-    def print_bar(self):
-        if (self.todo != 0):
-            self.done += 1
-            tenth_of_procent = int(1000 * (self.done / self.todo))
-            if (self.last_tenth_of_procent < tenth_of_procent):
-                half_procent = int((tenth_of_procent/1000)
-                                   * PROGRESS_BAR_LENGTH)
-                bar = (chr(9608) * half_procent + " "
-                       * (PROGRESS_BAR_LENGTH - half_procent))
-                now = datetime.now()
-                left = (self.todo - self.done) * (now - self.start) / self.done
-                sec = int(left.total_seconds())
-                if sec < 60:
-                    print(f"\r|{bar}| {tenth_of_procent/10:.1f} %"
-                          f"  Estimated time left: {format(sec+1)} sec       ",
-                          end="\r")
-                else:
-                    print(f"\r|{bar}| {tenth_of_procent/10:.1f} %"
-                          f"  Estimated time left: {format(int(sec / 60))}"
-                          f" min {format(int(sec % 60)+1)} sec    ", end="\r")
-
-            self.last_tenth_of_procent = tenth_of_procent
-
 
 def print_error_message():
     print("Usage:\n"
@@ -344,17 +315,17 @@ def print_error_message():
 
 def recognize_parameter(parameter):
     for option_name, (option_numerical_name, option_value) in OPTIONS.items():
-        if (option_name == parameter):
-            return (option_numerical_name, option_value)
-    return (OPTION_ERROR, OPTION_ERROR)
+        if option_name == parameter:
+            return option_numerical_name, option_value
+    return ERRORROR, ERROR
 
 
 def process_parameters() -> tuple:
-    """Function process input parameters. It return
+    """Function process input parameters. It returns
 (sort type, plots should be created, progress bar displaied)
 in the first parameter, correctnost of the input in the second.
 """
-    input_options = [IMPLICIT_STORT_TYPE,
+    input_options = [IMPLICIT_SORT_TYPE,
                      IMPLICIT_WITH_PLOTS]
     possible_options = max(j for (i, (j, k)) in OPTIONS.items())
 
@@ -364,9 +335,9 @@ in the first parameter, correctnost of the input in the second.
                       f"{len(sys.argv)-1}.\n")
         return input_options, False
     for i in (2, possible_options+2):
-        if (len(sys.argv) >= i+1):
+        if len(sys.argv) >= i+1:
             (j, k) = recognize_parameter(sys.argv[i])
-            if (j != OPTION_ERROR):
+            if j != ERROR:
                 input_options[j] = k
             else:
                 logging.error(f"Invalid {i}nd parameter: '{sys.argv[i]}'.\n")
@@ -376,34 +347,37 @@ in the first parameter, correctnost of the input in the second.
 
 
 def main() -> None:
-    """ rails-load-stats processes a logfile of any Ruby on Rails app"
+    """ rails-load-stats processes a logfile of any Ruby on Rails app
 to analyze where the load to the app comes from. Inspired by:
 https://github.com/pmoravec/rails-load-stats
 """
     ((sort_type, with_plots), correct) = process_parameters()
-    if (not correct):
+    if not correct:
         print_error_message()
         return
     log_file_name = sys.argv[1]
 
-    pb = make_progress_bar(log_file_name)
+    extraction = ExtractDataLines(1)
+    number_of_log_file_lines = extraction.number_of_lines(log_file_name)
+    if number_of_log_file_lines == 0:
+        print(f"Log file {log_file_name} is empty or can not be read.")
+        return
+    pb = MakeProgressBar(number_of_log_file_lines)
 
-    output = text_output(sort_type-1)
-    extraction = extract_data_lines(1)
+    output = TextOutput(sort_type-1)
     extracted_data = extraction.return_results()
     try:
         with open(log_file_name, 'r') as file:
+            i = 0
             output.first_log(log_file_name)
             for new_line in file:
+                i += 1
                 extraction.process_line(new_line)
-                pb.print_bar()
+                pb.print_bar(i)
     except Exception as file_exception:
         print(file_exception)
         print_error_message()
         return
-
-    if with_plots:
-        plot_data = extraction.return_plot_data()
 
     open_processing_entries = extraction.return_open_processing_entries()
     max_open_proc_entries = extraction.return_max_processing_entries()
@@ -412,9 +386,17 @@ https://github.com/pmoravec/rails-load-stats
     output.write_open_processing_entries(open_processing_entries,
                                          extraction.return_last_time())
     if with_plots:
+        plot_data = extraction.return_plot_data()
         output.return_plot_data(plot_data)
     return
 
 
 if __name__ == "__main__":
+    try:
+        from tabulate import tabulate
+    except ModuleNotFoundError as error:
+        print("ERROR: Library 'tabulate' is not found!\n"
+              "Install python3 tabulate library, like e.g.:"
+              "yum install python3-tabulate"
+              "in Fedora.")
     main()

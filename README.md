@@ -59,8 +59,8 @@ Example output:
 ## Requirements:
 Python version >= 3.6
 
-for creating plots (--with_plots option):
-mathplotlib
+tabulate - library for printing tables
+mathplotlib - library for creating plots (--with_plots option)
 
 
 ## candlepin-load-stats.py
