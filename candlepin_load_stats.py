@@ -48,21 +48,6 @@ class ExtractDataLine:
         self.max_len = 0
 
     @staticmethod
-    def number_of_lines(log_file_name: str):
-        """ Return number of lines of the input file
-    """
-        count = 0
-        try:
-            with open(log_file_name, 'r') as file:
-                for count, line in enumerate(file):
-                    pass
-                todo = count + 1
-        except Exception as file_exception:
-            print(file_exception)
-            return ERROR
-        return todo
-
-    @staticmethod
     def return_line_type(split_line: list):
         for line_type_identification, line_type_id in LINE_TYPE.items():
             for i in split_line:
@@ -219,11 +204,12 @@ class ExtractDataLine:
 
     def process_log_file(self, log_file_name: str):
 
-        number_of_log_file_lines = self.number_of_lines(log_file_name)
+        pb = MakeProgressBar()
+        number_of_log_file_lines = pb.number_of_lines(log_file_name)
         if number_of_log_file_lines == 0:
             print(f"Log file {log_file_name} is empty or can not be read.")
-            return ERROR
-        progress = MakeProgressBar(number_of_log_file_lines)
+            return
+        pb.set_todo(number_of_log_file_lines)
 
         try:
             with open(log_file_name, 'r') as file:
@@ -231,7 +217,7 @@ class ExtractDataLine:
                 for new_line in file:
                     line_number += 1
                     self.process_line(new_line)
-                    progress.print_bar(line_number)
+                    pb.print_bar(line_number)
         except Exception as file_exception:
             print(file_exception)
             return ERROR

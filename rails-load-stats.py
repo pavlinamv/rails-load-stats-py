@@ -185,21 +185,6 @@ class ExtractDataLines:
     def return_last_time(self) -> float:
         return self.last_time
 
-    @staticmethod
-    def number_of_lines(log_file_name: str):
-        """ Return number of lines of the input file
-    """
-        count = 0
-        try:
-            with open(log_file_name, 'r') as file:
-                for count, line in enumerate(file):
-                    pass
-                todo = count + 1
-        except Exception as file_exception:
-            print(file_exception)
-            return ERROR
-        return todo
-
 
 class TextOutput:
     duration_values: list
@@ -359,11 +344,12 @@ https://github.com/pmoravec/rails-load-stats
     log_file_name = sys.argv[1]
 
     extraction = ExtractDataLines(1)
-    number_of_log_file_lines = extraction.number_of_lines(log_file_name)
+    pb = MakeProgressBar()
+    number_of_log_file_lines = pb.number_of_lines(log_file_name)
     if number_of_log_file_lines == 0:
         print(f"Log file {log_file_name} is empty or can not be read.")
         return
-    pb = MakeProgressBar(number_of_log_file_lines)
+    pb.set_todo(number_of_log_file_lines)
 
     output = TextOutput(sort_type-1)
     extracted_data = extraction.return_results()
