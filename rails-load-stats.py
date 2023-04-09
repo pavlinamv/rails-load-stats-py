@@ -25,8 +25,8 @@ TASK = {'attributes': {2: "Task"},
         }
 LINE_TYPE = (COMPLETED, PROCESSING, TASK)
 LINE_TYPE_NO = {}
-UNFOUND_POSITION = -1
-UNFOUND_FILLED_LIST = []
+NOT_FOUND_POSITION = -1
+NOT_FOUND_FILLED_LIST = []
 
 OPTIONS = {"1": (0, 1),
            "2": (0, 2),
@@ -72,8 +72,8 @@ class ExtractDataLines:
         self.last_time = time.mktime(time_vector)
         return self.last_time
 
-    def is_input_line_type(self, characteristic: dict, minlen: int) -> int:
-        if len(self.line) < minlen:
+    def is_input_line_type(self, characteristic: dict, min_len: int) -> int:
+        if len(self.line) < min_len:
             return False
         for i, j in characteristic.items():
             if self.line[i] != j:
@@ -110,34 +110,34 @@ class ExtractDataLines:
                 self.max_proc_entries_len += 1
 
     def extract_duration_from_entry(self) -> int:
-        duration_position = UNFOUND_POSITION
+        duration_position = NOT_FOUND_POSITION
         for i in range(COMPLETED['min_duration_index']-1,
                        len(self.line)-1):
             if self.line[i] == 'in':
                 duration_position = i+1
 
-        if duration_position == UNFOUND_POSITION:
-            return UNFOUND_POSITION
+        if duration_position == NOT_FOUND_POSITION:
+            return NOT_FOUND_POSITION
         try:
             duration = int(
                 self.line[duration_position][:-COMPLETED['time_unit_length']])
         except Exception as ex:
             print(ex)
-            return UNFOUND_POSITION
+            return NOT_FOUND_POSITION
         return duration
 
     def add_time_result(self, entry: int) -> None:
         duration = self.extract_duration_from_entry()
-        if duration == UNFOUND_POSITION:
+        if duration == NOT_FOUND_POSITION:
             return
-        duration_values_list = UNFOUND_FILLED_LIST
+        duration_values_list = NOT_FOUND_FILLED_LIST
         for i in self.duration_values:
             if entry[1] == i[0]:
                 duration_values_list = i[1]
                 break
-        if duration_values_list == UNFOUND_FILLED_LIST:
-            cosi = [entry[1], [duration]]
-            self.duration_values.append(cosi)
+        if duration_values_list == NOT_FOUND_FILLED_LIST:
+            duration_value = [entry[1], [duration]]
+            self.duration_values.append(duration_value)
         else:
             duration_values_list.append(duration)
 
@@ -265,11 +265,11 @@ class TextOutput:
         print(f"\nMaximally {len(max_open_proc_entries)} concurrent "
               "requests when processing:")
         enumerate_entries = list(enumerate(max_open_proc_entries, 1))
-        concurrent_enries = []
+        concurrent_entries = []
         for (i, (j, k, l, m, n)) in enumerate_entries:
-            concurrent_enries.append((i, l, j, k))
+            concurrent_entries.append((i, l, j, k))
         col_names = ["Number", "Time", "Request ID", "Endpoint"]
-        print(tabulate(concurrent_enries, headers=col_names))
+        print(tabulate(concurrent_entries, headers=col_names))
 
     @staticmethod
     def return_plot_data(plot_data) -> None:
@@ -288,15 +288,16 @@ class TextOutput:
         if len(open_entries) > 0:
             print(f"\n{len(open_entries)} processing requests are"
                   f" not closed in the end of file:")
-            concurent_enries = []
+            concurrent_entries = []
             for (i, (j, k, l, m, n)) in list(enumerate(open_entries, 1)):
-                concurent_enries.append((i, last_time-n, l, j, k))
+                concurrent_entries.append((i, last_time-n, l, j, k))
             col_names = ["Number", " Pending time (s)", "Time stamp",
                          "Request", "IDEndpoint"]
-            print(tabulate(concurent_enries, headers=col_names))
+            print(tabulate(concurrent_entries, headers=col_names))
 
         else:
             print("\nNo processing requests are open in the end of file.\n")
+
 
 def print_error_message():
     print("Usage:\n"
@@ -322,8 +323,8 @@ def recognize_parameter(parameter):
 
 def process_parameters() -> tuple:
     """Function process input parameters. It returns
-(sort type, plots should be created, progress bar displaied)
-in the first parameter, correctnost of the input in the second.
+(sort type, plots should be created, progress bar displayed)
+in the first parameter,  input correctness in the second.
 """
     input_options = [IMPLICIT_SORT_TYPE,
                      IMPLICIT_WITH_PLOTS]
