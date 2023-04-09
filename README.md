@@ -60,6 +60,7 @@ Example output:
 Python version >= 3.6
 
 tabulate - library for printing tables
+
 mathplotlib - library for creating plots (--with_plots option)
 
 
