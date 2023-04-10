@@ -5,7 +5,6 @@ import statistics
 from datetime import datetime
 import re
 import time
-import logging
 from progress_bar import MakeProgressBar
 from process_parameters import ProcessParameters
 
@@ -126,7 +125,7 @@ class ExtractDataLines:
             return NOT_FOUND_POSITION
         return duration
 
-    def add_time_result(self, entry: int) -> None:
+    def add_time_result(self, entry) -> None:
         duration = self.extract_duration_from_entry()
         if duration == NOT_FOUND_POSITION:
             return
@@ -270,18 +269,14 @@ class TextOutput:
 
     @staticmethod
     def write_open_processing_entries(open_entries, last_time: float) -> None:
-        if len(open_entries) > 0:
-            print(f"\n{len(open_entries)} processing requests are"
-                  f" not closed in the end of file:")
-            concurrent_entries = []
-            for (i, (j, k, l, m, n)) in list(enumerate(open_entries, 1)):
-                concurrent_entries.append((i, last_time-n, l, j, k))
-            col_names = ["Number", " Pending time (s)", "Time stamp",
-                         "Request", "IDEndpoint"]
-            print(tabulate(concurrent_entries, headers=col_names))
-
-        else:
-            print("\nNo processing requests are open in the end of file.\n")
+        print(f"\n{len(open_entries)} processing requests are"
+              f" not closed in the end of file:")
+        concurrent_entries = []
+        for (i, (j, k, l, m, n)) in list(enumerate(open_entries, 1)):
+            concurrent_entries.append((i, last_time-n, l, j, k))
+        col_names = ["Number", " Pending time (s)", "Time stamp",
+                     "Request", "IDEndpoint"]
+        print(tabulate(concurrent_entries, headers=col_names))
 
 
 def print_error_message():
@@ -299,8 +294,6 @@ def print_error_message():
           " 7: sort by the sum time / percentage")
 
 
-
-
 def main() -> None:
     """ rails-load-stats processes a logfile of any Ruby on Rails app
 to analyze where the load to the app comes from. Inspired by:
@@ -316,7 +309,7 @@ https://github.com/pmoravec/rails-load-stats
 
     extraction = ExtractDataLines(1)
     pb = MakeProgressBar()
-    number_of_log_file_lines = pb.number_of_lines(log_file_name)
+    number_of_log_file_lines = pb.number_of_lines(log_file_name, ERROR)
     if number_of_log_file_lines == 0:
         print(f"Log file {log_file_name} is empty or can not be read.")
         return
@@ -341,7 +334,10 @@ https://github.com/pmoravec/rails-load-stats
     max_open_proc_entries = extraction.return_max_processing_entries()
     output.write_duration_values_list(extracted_data)
     output.write_max_concurrent_processing(max_open_proc_entries)
-    output.write_open_processing_entries(open_processing_entries,
+    if len(open_processing_entries) == 0:
+        print("\nNo processing requests are open in the end of file.\n")
+    else:
+        output.write_open_processing_entries(open_processing_entries,
                                          extraction.return_last_time())
     if with_plots:
         plot_data = extraction.return_plot_data()

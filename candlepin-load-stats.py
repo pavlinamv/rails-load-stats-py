@@ -206,7 +206,7 @@ class ExtractDataLine:
     def process_log_file(self, log_file_name: str):
 
         pb = MakeProgressBar()
-        number_of_log_file_lines = pb.number_of_lines(log_file_name)
+        number_of_log_file_lines = pb.number_of_lines(log_file_name, ERROR)
         if number_of_log_file_lines == 0:
             print(f"Log file {log_file_name} is empty or can not be read.")
             return

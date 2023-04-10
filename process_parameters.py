@@ -1,8 +1,9 @@
 import sys
 
+
 class ProcessParameters:
     options: dict
-    error_value: dict
+    error_value: int
 
     def __init__(self, options: dict, error_value: int):
         self.options = options
@@ -14,7 +15,6 @@ class ProcessParameters:
             if option_name == parameter:
                 return option_numerical_name, option_value
         return self.error_value, self.error_value
-
 
     def process_parameters(self, input_options: list) -> tuple:
         """Function process input parameters.

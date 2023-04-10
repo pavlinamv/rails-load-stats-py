@@ -20,7 +20,7 @@ class MakeProgressBar:
         self.todo = 0 if todo < 0 else todo
 
     @staticmethod
-    def number_of_lines(log_file_name: str):
+    def number_of_lines(log_file_name: str, error: int):
         """ Return number of lines of the input file
     """
         count = 0
@@ -31,7 +31,7 @@ class MakeProgressBar:
                 todo = count + 1
         except Exception as file_exception:
             print(file_exception)
-            return ERROR
+            return error
         return todo
 
     def print_bar(self, done: int):
