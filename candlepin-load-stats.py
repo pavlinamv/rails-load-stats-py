@@ -4,6 +4,7 @@ import logging
 import statistics
 import uuid
 from progress_bar import MakeProgressBar
+from process_parameters import ProcessParameters
 
 LINE_TYPE_NO = 0
 LINE_TYPE_RESPONSE = 1
@@ -15,15 +16,15 @@ LINE_TYPE = {'Response:': LINE_TYPE_RESPONSE,
              'completed': LINE_TYPE_COMPLETED_JOB,
              'Starting': LINE_TYPE_STARTING_JOB}
 
-ERROR = -1
 OK = 0
-IMPLICIT_SORT_TYPE = 7
 OPTIONS = {"1": (0, 0), "2": (0, 1), "3": (0, 2), "4": (0, 3),
            "5": (0, 4), "6": (0, 5), "7": (0, 6), "8": (0, 7),
            "9": (0, 8), "action": (0, 0), "request_type": (0, 1),
            "count": (0, 2), "min": (0, 3), "max": (0, 4),
            "avg": (0, 5), "mean": (0, 6), "sum": (0, 7),
            "percentage": (0, 8)}
+ERROR = -1
+IMPLICIT_SORT_TYPE = 7
 
 MASKED_WORDS = {"?": "...",
                 "/products/": "PRODUCT",
@@ -267,45 +268,15 @@ def print_error_message():
           " 7 or 'mean': sort by the mean time\n"
           " 8 or 9 or sum or percentage: sort by the sum time / percentage")
 
-
-def recognize_parameter(parameter):
-    for option_name, (option_numerical_name, option_value) in OPTIONS.items():
-        if option_name == parameter:
-            return option_numerical_name, option_value
-    return ERROR, ERROR
-
-
-def process_parameters() -> tuple:
-    """Function process input parameters.
-"""
-    input_options = [IMPLICIT_SORT_TYPE]
-    possible_options = max(j for (i, (j, k)) in OPTIONS.items())
-
-    if (len(sys.argv) < 2) or (len(sys.argv) > possible_options+3):
-        print(f"Invalid number of parameters. \nNumber of parameters "
-              f"Should be minimally 1 and maximally 2 not "
-              f"{len(sys.argv)-1}.\n")
-        print_error_message()
-        return input_options, False
-    for i in (2, possible_options+2):
-        if len(sys.argv) >= i+1:
-            (j, k) = recognize_parameter(sys.argv[i])
-            if j != ERROR:
-                input_options[j] = k
-            else:
-                print(f"Invalid parameter: '{sys.argv[i]}'.\n")
-                print_error_message()
-                return input_options, False
-
-    return input_options, True
-
-
 def main() -> None:
     logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.DEBUG)
     logging.basicConfig(format='%(asctime)s %(message)s')
 
-    ((sort_type), correct) = process_parameters()
+    implicit_options = [IMPLICIT_SORT_TYPE]
+    pp = ProcessParameters(OPTIONS, ERROR)
+    ((sort_type), correct) = pp.process_parameters(implicit_options,)
     if not correct:
+        print_error_message()
         return
     log_file_name = sys.argv[1]
 

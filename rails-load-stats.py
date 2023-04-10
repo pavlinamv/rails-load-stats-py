@@ -7,6 +7,7 @@ import re
 import time
 import logging
 from progress_bar import MakeProgressBar
+from process_parameters import ProcessParameters
 
 COMPLETED = {'attributes': {2: "Completed"},
              'min_line_len': 6,
@@ -39,7 +40,6 @@ OPTIONS = {"1": (0, 1),
 ERROR = -1
 IMPLICIT_SORT_TYPE = 7
 IMPLICIT_WITH_PLOTS = False
-IMPLICIT_PROGRESS_BAR = True
 
 PROGRESS_BAR_LENGTH = 30
 
@@ -299,37 +299,6 @@ def print_error_message():
           " 7: sort by the sum time / percentage")
 
 
-def recognize_parameter(parameter):
-    for option_name, (option_numerical_name, option_value) in OPTIONS.items():
-        if option_name == parameter:
-            return option_numerical_name, option_value
-    return ERRORROR, ERROR
-
-
-def process_parameters() -> tuple:
-    """Function process input parameters. It returns
-(sort type, plots should be created, progress bar displayed)
-in the first parameter,  input correctness in the second.
-"""
-    input_options = [IMPLICIT_SORT_TYPE,
-                     IMPLICIT_WITH_PLOTS]
-    possible_options = max(j for (i, (j, k)) in OPTIONS.items())
-
-    if (len(sys.argv) < 2) or (len(sys.argv) > possible_options+3):
-        logging.error(f"Invalid number of parameters. \nNumber of parameters "
-                      f"Should be minimally 1 and maximally 4 not "
-                      f"{len(sys.argv)-1}.\n")
-        return input_options, False
-    for i in (2, possible_options+2):
-        if len(sys.argv) >= i+1:
-            (j, k) = recognize_parameter(sys.argv[i])
-            if j != ERROR:
-                input_options[j] = k
-            else:
-                logging.error(f"Invalid {i}nd parameter: '{sys.argv[i]}'.\n")
-                return input_options, False
-
-    return input_options, True
 
 
 def main() -> None:
@@ -337,7 +306,9 @@ def main() -> None:
 to analyze where the load to the app comes from. Inspired by:
 https://github.com/pmoravec/rails-load-stats
 """
-    ((sort_type, with_plots), correct) = process_parameters()
+    implicit_options = [IMPLICIT_SORT_TYPE, IMPLICIT_WITH_PLOTS]
+    pp = ProcessParameters(OPTIONS, ERROR)
+    ((sort_type, with_plots), correct) = pp.process_parameters(implicit_options)
     if not correct:
         print_error_message()
         return
