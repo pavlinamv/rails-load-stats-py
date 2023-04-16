@@ -165,10 +165,8 @@ class ExtractDataLine:
         return ()
 
     def process_starting_or_request_line(self, x: int):
-        if x == LINE_TYPE_REQUEST:
-            extracted_data = self.extract_request_data()
-        else:
-            extracted_data = self.extract_job_start_data()
+        extracted_data = self.extract_request_data() if x == LINE_TYPE_REQUEST \
+            else self.extract_job_start_data()
         if extracted_data == ():
             return
         self.request_data.append(extracted_data)
