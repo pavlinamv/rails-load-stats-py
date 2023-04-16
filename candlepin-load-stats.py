@@ -64,12 +64,12 @@ class ExtractDataLine:
         except ValueError:
             return False
 
-    def maskUUID(self, request_type: str):
-        split_request_type = request_type.split("/")
-        for i in range(len(split_request_type)):
-            if self.is_valid_uuid(split_request_type[i]):
-                split_request_type[i] = "UUID"
-        return "/".join(split_request_type)
+    def mask_uuid(self, masked_line: str):
+        split_masked_line = masked_line.split("/")
+        for i, masked_line_part in enumerate(split_masked_line):
+            if self.is_valid_uuid(masked_line_part):
+                split_masked_line[i] = "UUID"
+        return "/".join(split_masked_line)
 
     @staticmethod
     def mask_after_word(request_type: str):
@@ -87,7 +87,7 @@ class ExtractDataLine:
             for i in self.split_line:
                 if i[:4] == "uri=":
                     request_type = (i[4:])[:-1]
-                    request_type = self.maskUUID(request_type)
+                    request_type = self.mask_uuid(request_type)
                     request_type = self.mask_after_word(request_type)
                 if i[:5] == "verb=":
                     request_action = i[4:].split("=")[1]
