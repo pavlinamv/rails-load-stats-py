@@ -107,13 +107,13 @@ class ExtractDataLine:
         identification = ""
         try:
             request_type = self.new_line.split('"')[-2]
-            for i in range(len(self.split_line) - 1, 0, -1):
-                if self.split_line[i] == "job":
-                    if ((self.split_line[i-1] != "Starting") and
-                            (self.split_line[i-2] != "-")):
+            for i in range(len(self.split_line) - 1, 1, -1):
+                if ( self.split_line[i] == "job"
+                    and self.split_line[i-1] != "Starting"
+                    and self.split_line[i-2] != "-" ):
                         return ()
-                if ((self.split_line[i][:5] == "[job=") and
-                        (self.split_line[i+1][:8] == "job_key=")):
+                if ((self.split_line[i][:5] == "[job=")
+                    and (self.split_line[i+1][:8] == "job_key=")):
                     identification = self.split_line[i][5:]
         except IndexError as exception:
             logging.info(f"'extract_job_start_data' can not extract data"
@@ -151,10 +151,9 @@ class ExtractDataLine:
                              f"in row: {self.new_line}")
                 return ()
             execution_time = execution_time[:-3]
-            for i in range(len(self.split_line)-1, 0, -1):
-                if self.split_line[i][:5] == "[job=":
-                    identification = self.split_line[i][5:]
-                    return identification, int(execution_time)
+            for line_part in self.split_line:
+                if line_part[:5] == "[job=":
+                    return line_part[5:], int(execution_time)
         except IndexError as exception:
             logging.info(f"'extract_completed_job_data' can not extract data"
                          f"in row: {self.new_line}\n {exception}")
