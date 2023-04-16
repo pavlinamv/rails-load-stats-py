@@ -145,15 +145,15 @@ class ExtractDataLine:
 
     def extract_completed_job_data(self):
         try:
-            execution_time = self.split_line[-1]
-            if execution_time[-3:] != "ms\n":
+            execution_time_text = self.split_line[-1]
+            if execution_time_text[-3:] != "ms\n":
                 logging.info(f"'extract_completed_job_data' can not extract data"
                              f"in row: {self.new_line}")
                 return ()
-            execution_time = execution_time[:-3]
+            execution_time = int(execution_time_text[:-3])
             for line_part in self.split_line:
                 if line_part[:5] == "[job=":
-                    return line_part[5:], int(execution_time)
+                    return line_part[5:], execution_time
         except IndexError as exception:
             logging.info(f"'extract_completed_job_data' can not extract data"
                          f"in row: {self.new_line}\n {exception}")
