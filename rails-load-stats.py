@@ -5,7 +5,7 @@ import statistics
 from datetime import datetime
 import re
 import time
-from progress_bar import MakeProgressBar
+from progress_bar import ProgressBarFromFileLines
 from process_parameters import ProcessParameters
 
 COMPLETED = {'attributes': {2: "Completed"},
@@ -308,12 +308,11 @@ https://github.com/pmoravec/rails-load-stats
     log_file_name = sys.argv[1]
 
     extraction = ExtractDataLines(1)
-    pb = MakeProgressBar()
-    number_of_log_file_lines = pb.number_of_lines(log_file_name, ERROR)
+    pb = ProgressBarFromFileLines()
+    number_of_log_file_lines = pb.number_of_lines(log_file_name)
     if number_of_log_file_lines == 0:
         print(f"Log file {log_file_name} is empty or can not be read.")
         return
-    pb.set_todo(number_of_log_file_lines)
 
     output = TextOutput(sort_type-1)
     extracted_data = extraction.return_results()

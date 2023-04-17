@@ -1,50 +1,47 @@
 from datetime import datetime
-import os
 
-BAR_WIDTH = 33
+BAR_WIDTH = 30
 
 
-class MakeProgressBar:
-    done: int
-    todo: int
+class ProgressBarFromFileLines:
+    all_lines: int
     start_time: datetime
-    last_tenth_of_percentage: int
+    last_printed_tenth_of_percentage: int
 
     def __init__(self) -> None:
-        self.last_tenth_of_percentage = 0
-        self.done = 0
-        self.todo = 0
+        self.last_printed_tenth_of_percentage = 0
+        self.all_lines = 0
         self.start_time = datetime.now()
 
-    def set_todo(self, todo: int) -> None:
-        self.todo = 0 if todo < 0 else todo
-
-    @staticmethod
-    def number_of_lines(log_file_name: str, error: int):
-        """ Return number of lines of the input file
+    def number_of_lines(self, log_file_name: str):
+        """ Return number of lines of the input file and set
+    all initial parameters for printing progress bar computed from
+    the number of all /processed lines of a file.
     """
         count = 0
         try:
             with open(log_file_name, 'r') as file:
                 for count, line in enumerate(file):
                     pass
-                todo = count + 1
+                self.all_lines = count + 1
         except Exception as file_exception:
             print(file_exception)
-            return error
-        return todo
 
-    def print_bar(self, done: int):
-        if self.todo == 0:
+        return self.all_lines
+
+    def print_bar(self, done_lines: int):
+        """ If the progress bar should be rewriten (there is something new)
+    it is rewritten.
+    """
+        if self.all_lines == 0:
             return
-        self.done = done
-        tenth_of_percentage = int(1000 * (self.done / self.todo))
-        if self.last_tenth_of_percentage >= tenth_of_percentage:
+        tenth_of_percentage = int(1000 * (done_lines / self.all_lines))
+        if self.last_printed_tenth_of_percentage >= tenth_of_percentage:
             return
-        half_percentage = int((tenth_of_percentage/1000) * BAR_WIDTH)
-        bar = chr(9608) * half_percentage + " " * (BAR_WIDTH - half_percentage - 1)
+        half_percentage = int((tenth_of_percentage/1000) * (BAR_WIDTH + 1))
+        bar = chr(9608) * half_percentage + " " * (BAR_WIDTH - half_percentage)
         now = datetime.now()
-        left = (self.todo - self.done) * (now - self.start_time) / self.done
+        left = (self.all_lines - done_lines) * (now - self.start_time) / done_lines
         sec = int(left.total_seconds())
         text = f"\r|{bar}| {tenth_of_percentage/10:.1f} %  " +\
                f"Estimated time left: "
@@ -53,4 +50,4 @@ class MakeProgressBar:
         text += f"{format(int(sec % 60)+1)} sec       "
         print(text, end="\r\r")
 
-        self.last_tenth_of_percentage = tenth_of_percentage
+        self.last_printed_tenth_of_percentage = tenth_of_percentage

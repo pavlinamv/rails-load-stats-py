@@ -3,7 +3,7 @@ import sys
 import logging
 import statistics
 import uuid
-from progress_bar import MakeProgressBar
+from progress_bar import ProgressBarFromFileLines
 from process_parameters import ProcessParameters
 
 LINE_TYPE_NO = 0
@@ -202,12 +202,11 @@ class ExtractDataLine:
 
     def process_log_file(self, log_file_name: str):
 
-        pb = MakeProgressBar()
-        number_of_log_file_lines = pb.number_of_lines(log_file_name, ERROR)
+        pb = ProgressBarFromFileLines()
+        number_of_log_file_lines = pb.number_of_lines(log_file_name)
         if number_of_log_file_lines == 0:
             print(f"Log file {log_file_name} is empty or can not be read.")
             return
-        pb.set_todo(number_of_log_file_lines)
 
         try:
             with open(log_file_name, 'r') as file:
