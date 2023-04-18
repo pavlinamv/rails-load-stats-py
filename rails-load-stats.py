@@ -46,8 +46,6 @@ PROGRESS_BAR_LENGTH = 30
 class ExtractDataLines:
     open_processing_entries: list
     max_open_proc_entries: list
-    processing_entries_len: int
-    max_proc_entries_len: int
     duration_values: list
     line: list
     enable_plots: int
@@ -57,8 +55,6 @@ class ExtractDataLines:
     def __init__(self, enable_plots: int) -> None:
         self.open_processing_entries = []
         self.max_open_proc_entries = []
-        self.processing_entries_len = 0
-        self.max_proc_entries_len = 0
         self.duration_values = []
         self.line = []
         self.enable_plots = enable_plots
@@ -99,14 +95,12 @@ class ExtractDataLines:
                  self.line[PROCESSING['timestamp_index']],
                  line_time,
                  self.compute_and_log_time(line_time)))
-            self.processing_entries_len += 1
 
             if self.enable_plots:
-                self.plot_data.append(self.processing_entries_len)
+                self.plot_data.append(len(self.open_processing_entries))
 
-            if self.max_proc_entries_len < self.processing_entries_len:
+            if len(self.max_open_proc_entries) < len(self.open_processing_entries):
                 self.max_open_proc_entries = self.open_processing_entries.copy()
-                self.max_proc_entries_len += 1
 
     def extract_duration_from_entry(self) -> int:
         duration_position = NOT_FOUND_POSITION
@@ -147,7 +141,6 @@ class ExtractDataLines:
             if entry[0] == name1_list[-1]:
                 self.add_time_result(entry)
                 self.open_processing_entries.remove(entry)
-                self.processing_entries_len -= 1
                 break
 
     def treat_task_line(self) -> None:
@@ -156,7 +149,6 @@ class ExtractDataLines:
             name1_list = (name_data[:-1]).split("|")
             if entry[0] == name1_list[-1]:
                 self.open_processing_entries.remove(entry)
-                self.processing_entries_len -= 1
                 break
 
     def process_line(self, new_line) -> None:

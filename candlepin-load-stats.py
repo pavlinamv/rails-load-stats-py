@@ -40,13 +40,11 @@ class ExtractDataLine:
     request_data: list
     results: dict
     max_data: list
-    max_len: int
 
     def __init__(self):
         self.request_data = []
         self.results = {}
         self.max_data = []
-        self.max_len = 0
 
     @staticmethod
     def return_line_type(split_line: list):
@@ -169,8 +167,7 @@ class ExtractDataLine:
         if extracted_data == ():
             return
         self.request_data.append(extracted_data)
-        if self.max_len < len(self.request_data):
-            self.max_len = len(self.request_data)
+        if len(self.max_data) < len(self.request_data):
             self.max_data = self.request_data.copy()
 
     def process_response_or_completed_line(self, x: int):
