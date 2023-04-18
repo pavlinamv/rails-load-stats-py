@@ -9,9 +9,9 @@ class ProgressBarFromFileLines:
     last_printed_tenth_of_percentage: int
 
     def __init__(self) -> None:
-        self.last_printed_tenth_of_percentage = 0
         self.all_lines = 0
         self.start_time = datetime.now()
+        self.last_printed_tenth_of_percentage = 0
 
     def number_of_lines(self, log_file_name: str):
         """ Return number of lines of the input file and set
@@ -21,16 +21,14 @@ class ProgressBarFromFileLines:
         count = 0
         try:
             with open(log_file_name, 'r') as file:
-                for count, line in enumerate(file):
-                    pass
-                self.all_lines = count + 1
+                self.all_lines = max(i for i, line in enumerate(file)) + 1
         except Exception as file_exception:
             print(file_exception)
 
         return self.all_lines
 
     def print_bar(self, done_lines: int):
-        """ If the progress bar should be rewriten (there is something new)
+        """ If the progress bar should be rewritten (there is something new)
     it is rewritten.
     """
         if self.all_lines == 0:
