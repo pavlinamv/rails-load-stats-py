@@ -5,16 +5,18 @@ import statistics
 import uuid
 from progress_bar import ProgressBarFromFileLines
 from process_parameters import ProcessParameters
+from enum import Enum
 
-LINE_TYPE_NO = 0
-LINE_TYPE_RESPONSE = 1
-LINE_TYPE_REQUEST = 2
-LINE_TYPE_COMPLETED_JOB = 3
-LINE_TYPE_STARTING_JOB = 4
-LINE_TYPE = {'Response:': LINE_TYPE_RESPONSE,
-             'Request:': LINE_TYPE_REQUEST,
-             'completed': LINE_TYPE_COMPLETED_JOB,
-             'Starting': LINE_TYPE_STARTING_JOB}
+class LineType(Enum):
+    NO = 0
+    RESPONSE = 1
+    REQUEST = 2
+    COMPLETED_JOB = 3
+    STARTING_JOB = 4
+LINE_TYPE = {'Response:': LineType.RESPONSE,
+             'Request:': LineType.REQUEST,
+             'completed': LineType.COMPLETED_JOB,
+             'Starting': LineType.STARTING_JOB}
 
 OK = 0
 OPTIONS = {"1": (0, 0), "2": (0, 1), "3": (0, 2), "4": (0, 3),
@@ -52,7 +54,7 @@ class ExtractDataLine:
             for i in split_line:
                 if i == line_type_identification:
                     return line_type_id
-        return LINE_TYPE_NO
+        return LineType.NO
 
     @staticmethod
     def is_valid_uuid(value: str):
@@ -162,7 +164,7 @@ class ExtractDataLine:
         return ()
 
     def process_starting_or_request_line(self, x: int):
-        extracted_data = self.extract_request_data() if x == LINE_TYPE_REQUEST \
+        extracted_data = self.extract_request_data() if x == LineType.REQUEST \
             else self.extract_job_start_data()
         if extracted_data == ():
             return
@@ -171,7 +173,7 @@ class ExtractDataLine:
             self.max_data = self.request_data.copy()
 
     def process_response_or_completed_line(self, x: int):
-        if x == LINE_TYPE_RESPONSE:
+        if x == LineType.RESPONSE:
             extracted_data = self.extract_response_data()
         else:
             extracted_data = self.extract_completed_job_data()
@@ -191,10 +193,10 @@ class ExtractDataLine:
         self.split_line = new_line.split(" ")
         x = self.return_line_type(self.split_line)
 
-        if (x == LINE_TYPE_REQUEST) or (x == LINE_TYPE_STARTING_JOB):
+        if (x == LineType.REQUEST) or (x == LineType.STARTING_JOB):
             self.process_starting_or_request_line(x)
 
-        elif (x == LINE_TYPE_RESPONSE) or (x == LINE_TYPE_COMPLETED_JOB):
+        elif (x == LineType.RESPONSE) or (x == LineType.COMPLETED_JOB):
             self.process_response_or_completed_line(x)
 
     def process_log_file(self, log_file_name: str):
