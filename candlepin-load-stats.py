@@ -7,12 +7,15 @@ from progress_bar import ProgressBarFromFileLines
 from process_parameters import ProcessParameters
 from enum import Enum
 
+
 class LineType(Enum):
     NO = 0
     RESPONSE = 1
     REQUEST = 2
     COMPLETED_JOB = 3
     STARTING_JOB = 4
+
+
 LINE_TYPE = {'Response:': LineType.RESPONSE,
              'Request:': LineType.REQUEST,
              'completed': LineType.COMPLETED_JOB,
@@ -108,12 +111,12 @@ class ExtractDataLine:
         try:
             request_type = self.new_line.split('"')[-2]
             for i in range(len(self.split_line) - 1, 1, -1):
-                if ( self.split_line[i] == "job"
-                    and self.split_line[i-1] != "Starting"
-                    and self.split_line[i-2] != "-" ):
-                        return ()
+                if (self.split_line[i] == "job"
+                        and self.split_line[i-1] != "Starting"
+                        and self.split_line[i-2] != "-"):
+                    return ()
                 if ((self.split_line[i][:5] == "[job=")
-                    and (self.split_line[i+1][:8] == "job_key=")):
+                        and (self.split_line[i+1][:8] == "job_key=")):
                     identification = self.split_line[i][5:]
         except IndexError as exception:
             logging.info(f"'extract_job_start_data' can not extract data"
@@ -262,6 +265,7 @@ def print_error_message():
           " 6 or 'avg': sort by the avg time\n"
           " 7 or 'mean': sort by the mean time\n"
           " 8 or 9 or sum or percentage: sort by the sum time / percentage")
+
 
 def main() -> None:
     logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.DEBUG)
