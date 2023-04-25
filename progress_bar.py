@@ -10,7 +10,6 @@ class ProgressBarFromFileLines:
 
     def __init__(self) -> None:
         self.all_lines = 0
-        self.start_time = datetime.now()
         self.last_printed_tenth_of_percentage = 0
 
     def number_of_lines(self, log_file_name: str):
@@ -25,6 +24,7 @@ class ProgressBarFromFileLines:
         except Exception as file_exception:
             print(file_exception)
 
+        self.start_time = datetime.now()
         return self.all_lines
 
     def print_bar(self, done_lines: int):
