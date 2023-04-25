@@ -17,7 +17,6 @@ class ProgressBarFromFileLines:
     all initial parameters for printing progress bar computed from
     the number of all /processed lines of a file.
     """
-        count = 0
         try:
             with open(log_file_name, 'r') as file:
                 self.all_lines = max(i for i, line in enumerate(file)) + 1
