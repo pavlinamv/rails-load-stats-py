@@ -166,7 +166,7 @@ class ExtractDataLine:
                      f"in row: {self.new_line}")
         return ()
 
-    def process_starting_or_request_line(self, x: int):
+    def process_starting_or_request_line(self, x: LineType):
         extracted_data = self.extract_request_data() if x == LineType.REQUEST \
             else self.extract_job_start_data()
         if extracted_data == ():
@@ -175,7 +175,7 @@ class ExtractDataLine:
         if len(self.max_data) < len(self.request_data):
             self.max_data = self.request_data.copy()
 
-    def process_response_or_completed_line(self, x: int):
+    def process_response_or_completed_line(self, x: LineType):
         if x == LineType.RESPONSE:
             extracted_data = self.extract_response_data()
         else:
