@@ -100,7 +100,7 @@ class ExtractDataLine:
                          f" (IndexError) in row: {self.new_line}.\n"
                          f"{exception}")
             return ()
-        if (request_type == "") or (request_action == ""):
+        if "" in (request_type, request_action):
             logging.info(f"'extract_request_data' can not extract data"
                          f" in row: {self.new_line}")
             return ()
@@ -123,7 +123,8 @@ class ExtractDataLine:
                          f" (IndexError) in row: {self.new_line}.\n"
                          f"{exception}")
             return ()
-        if (identification == "") or (request_type == ""):
+
+        if "" in (identification, request_type):
             logging.info(f"'extract_job_start_data' can not extract data"
                          f"in row: {self.new_line}")
             return ()
@@ -196,10 +197,9 @@ class ExtractDataLine:
         self.split_line = new_line.split(" ")
         x = self.return_line_type(self.split_line)
 
-        if (x == LineType.REQUEST) or (x == LineType.STARTING_JOB):
+        if x in (LineType.REQUEST, LineType.STARTING_JOB):
             self.process_starting_or_request_line(x)
-
-        elif (x == LineType.RESPONSE) or (x == LineType.COMPLETED_JOB):
+        elif x in (LineType.RESPONSE, LineType.COMPLETED_JOB):
             self.process_response_or_completed_line(x)
 
     def process_log_file(self, log_file_name: str):
