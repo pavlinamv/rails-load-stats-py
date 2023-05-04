@@ -231,7 +231,7 @@ class TextOutput:
               f"i.e. {self.whole_time/3600_000/24:.2f} days) in summary\n")
         self.result_table.sort(
             reverse=True, key=lambda x: x[self.sorting_strategy])
-        col_names = [" action", "request_type", "count",
+        col_names = ["request_type", "count",
                      "min", "max", "avg",
                      "mean", "sum", "percentage"]
         print(tabulate(self.result_table, headers=col_names))
