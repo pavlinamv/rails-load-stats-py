@@ -6,6 +6,8 @@ import uuid
 from progress_bar import ProgressBarFromFileLines
 from process_parameters import ProcessParameters
 from enum import Enum
+from write_output import TextOutput
+from tabulate import tabulate
 
 
 class LineType(Enum):
@@ -22,14 +24,9 @@ LINE_TYPE = {'Response:': LineType.RESPONSE,
              'Starting': LineType.STARTING_JOB}
 
 OK = 0
-OPTIONS = {"1": (0, 0), "2": (0, 1), "3": (0, 2), "4": (0, 3),
-           "5": (0, 4), "6": (0, 5), "7": (0, 6), "8": (0, 7),
-           "9": (0, 8), "action": (0, 0), "request_type": (0, 1),
-           "count": (0, 2), "min": (0, 3), "max": (0, 4),
-           "avg": (0, 5), "mean": (0, 6), "sum": (0, 7),
-           "percentage": (0, 8)}
 ERROR = -1
 IMPLICIT_SORT_TYPE = 7
+IMPLICIT_WITH_STATS = False
 
 MASKED_WORDS = {"?": "...",
                 "/products/": "PRODUCT",
@@ -45,11 +42,15 @@ class ExtractDataLine:
     request_data: list
     results: dict
     max_data: list
+    output: object
+    sort_type: int
 
-    def __init__(self):
+    def __init__(self, sort_type: int, log_file_name: str, with_stats: int):
         self.request_data = []
         self.results = {}
         self.max_data = []
+        self.sort_type = sort_type
+        self.output = TextOutput(sort_type-1, with_stats, log_file_name)
 
     @staticmethod
     def return_line_type(split_line: list):
@@ -226,8 +227,27 @@ class ExtractDataLine:
     def return_computed_data(self):
         return self.results, self.max_data, self.request_data
 
+    def return_res(self):
+        duration_values = []
+        for i, j in self.results.items():
+            duration_values.append([i[0]+(5-len(i[0]))*" "+":"+i[1], j])
+        self.output.write_duration_values_list(duration_values,
+                                               "action: request_type")
+        print(f"\n\nMaximally {len(self.max_data)} concurrent requests when processing:")
+        col_names = ["id", "action", "request_type"]
+        print(tabulate(self.max_data, headers=col_names))
 
-def print_computed_data(data, sort_type):
+        if len(self.request_data) == 0:
+            print("\nNo processing request is open in the end of file.")
+        else:
+            print(f"\n{len(self.request_data)} processing requests are not closed in the end of file")
+            col_names = ["id", "action", "request_type"]
+            print(tabulate(self.request_data, headers=col_names))
+
+        return
+
+
+def print_computed_data(data, sort_type: int):
     """ Print computed data
     """
     number_of_tasks = sum(len(j) for j in data.values())
@@ -246,65 +266,32 @@ def print_computed_data(data, sort_type):
                        sum(j),
                        percentage))
 
-    data_x.sort(key=lambda x: x[sort_type[0]], reverse=True)
+    data_x.sort(key=lambda x: x[sort_type], reverse=True)
     col_names = ["action", "request_type", "count",
                  "min", "max", "avg",
                  "mean", "sum", "percentage"]
     print(tabulate(data_x, headers=col_names))
 
 
-def print_error_message():
-    print("Usage:\n"
-          "candlepin-rails-load-stats <FILE> [SORTING_TYPE] \n\n"
-          "Possible sorting types are:\n"
-          " 1 or 'action': sort by the action\n"
-          " 2 or 'request_type': sort by the request_type\n"
-          " 3 or 'count': sort by the count\n"
-          " 4 or 'min': sort by the min time\n"
-          " 5 or 'max': sort by the max time\n"
-          " 6 or 'avg': sort by the avg time\n"
-          " 7 or 'mean': sort by the mean time\n"
-          " 8 or 9 or sum or percentage: sort by the sum time / percentage")
-
-
 def main() -> None:
     logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.DEBUG)
     logging.basicConfig(format='%(asctime)s %(message)s')
 
-    implicit_options = [IMPLICIT_SORT_TYPE]
-    pp = ProcessParameters(OPTIONS, ERROR)
-    ((sort_type), correct) = pp.process_parameters(implicit_options,)
+    implicit_options = [IMPLICIT_SORT_TYPE, IMPLICIT_WITH_STATS]
+    pp = ProcessParameters(ERROR)
+    ((sort_type, with_stats), correct) = pp.process_parameters(implicit_options,)
     if not correct:
-        print_error_message()
+        pp.print_error_message()
         return
     log_file_name = sys.argv[1]
-
-    extraction = ExtractDataLine()
+    extraction = ExtractDataLine(sort_type, log_file_name, with_stats)
     if extraction.process_log_file(log_file_name) == ERROR:
         return
 
-    data, max_data, final_data = extraction.return_computed_data()
-    print_computed_data(data, sort_type)
-    print(f"\n\nMaximally {len(max_data)} concurrent requests when processing:")
-    col_names = ["id", "action", "request_type"]
-    print(tabulate(max_data, headers=col_names))
-
-    if len(final_data) == 0:
-        print("\nNo processing request is open in the end of file.")
-    else:
-        print(f"\n{len(final_data)} processing requests are not closed in the end of file")
-        col_names = ["id", "action", "request_type"]
-        print(tabulate(final_data, headers=col_names))
+    extraction.return_res()
 
     return
 
 
 if __name__ == "__main__":
-    try:
-        from tabulate import tabulate
-    except ModuleNotFoundError as error:
-        print("ERROR: Library 'tabulate' is not found!\n"
-              "Install python3 tabulate library, like e.g.:"
-              "yum install python3-tabulate"
-              "in Fedora.")
     main()

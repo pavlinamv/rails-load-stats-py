@@ -1,17 +1,22 @@
 import sys
 
 
+OPTIONS = {"1": (0, 0), "2": (0, 1), "3": (0, 2), "4": (0, 3),
+           "5": (0, 4), "6": (0, 5), "7": (0, 6), "8": (0, 7),
+           "name": (0, 0), "count": (0, 1), "min": (0, 2), "max": (0, 3),
+           "avg": (0, 4), "mean": (0, 5), "percentage": (0, 6),
+           "sum": (0, 6), "--with_stats": (1, True)}
+
+
 class ProcessParameters:
-    options: dict
     error_value: int
 
-    def __init__(self, options: dict, error_value: int):
-        self.options = options
+    def __init__(self, error_value: int):
         self.error_value = error_value
         return
 
     def recognize_parameter(self, parameter):
-        for option_name, (option_numerical_name, option_value) in self.options.items():
+        for option_name, (option_numerical_name, option_value) in OPTIONS.items():
             if option_name == parameter:
                 return option_numerical_name, option_value
         return self.error_value, self.error_value
@@ -20,7 +25,7 @@ class ProcessParameters:
         """Function process input parameters.
     """
 
-        possible_options = max(j for (i, (j, k)) in self.options.items())
+        possible_options = max(j for (i, (j, k)) in OPTIONS.items())
 
         if (len(sys.argv) < 2) or (len(sys.argv) > possible_options+3):
             print(f"Invalid number of parameters. \nNumber of parameters "
@@ -37,3 +42,17 @@ class ProcessParameters:
                     return input_options, False
 
         return input_options, True
+
+    @staticmethod
+    def print_error_message():
+        print("Usage:\n"
+              "rails-load-stats <FILE> [SORTING_TYPE] [--with_stats]\n"
+              "candlepin-load-stats <FILE> [SORTING_TYPE] [--with_stats]\n\n"
+              "Possible sorting types are:\n"
+              " 1 or 'name': sort by the action and request_type\n"
+              " 2 or 'count': sort by the count\n"
+              " 3 or 'min': sort by the min time\n"
+              " 4 or 'max': sort by the max time\n"
+              " 5 or 'avg': sort by the avg time\n"
+              " 6 or 'mean': sort by the mean time\n"
+              " 7 or 8 or 'percentage': sort by the sum time / percentage")
