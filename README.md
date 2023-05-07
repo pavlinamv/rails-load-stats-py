@@ -68,8 +68,7 @@ mathplotlib - library for creating plots (if --without_stats is not used)
 
 ## candlepin-load-stats.py
 
-candlepin-load-stats.py is similar as rails-load-stats.py script. It processes a candlepin logfile to analyze where the load to the app comes from. It work the same as 
-rails-load-stats.py, and have the same usage and requirements.
+candlepin-load-stats.py is similar as rails-load-stats.py script. It processes a candlepin logfile to analyze where the load to the app comes from. It works the same as rails-load-stats.py, and have the same usage and requirements.
 
 Example output:
 
