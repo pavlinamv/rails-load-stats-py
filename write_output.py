@@ -118,13 +118,3 @@ class TextOutput:
         print(tabulate(self.result_table, headers=col_names))
         if self.with_stats:
             self.create_files()
-
-    @staticmethod
-    def return_plot_data(plot_data) -> None:
-        x = range(1, len(plot_data)+1)
-        plt.plot(x, plot_data)
-        plt.xlabel('processing request number')
-        plt.ylabel('number of open concurrent processing requests')
-        plt.savefig("plot.png", dpi=500)
-        print("The plot that depicts the number of open processing "
-              "requests during the time is in file 'plot.png'. \n")
