@@ -5,7 +5,7 @@ OPTIONS = {"1": (0, 0), "2": (0, 1), "3": (0, 2), "4": (0, 3),
            "5": (0, 4), "6": (0, 5), "7": (0, 6), "8": (0, 7),
            "name": (0, 0), "count": (0, 1), "min": (0, 2), "max": (0, 3),
            "avg": (0, 4), "mean": (0, 5), "percentage": (0, 6),
-           "sum": (0, 6), "--with_stats": (1, True)}
+           "sum": (0, 6), "--without_stats": (1, True)}
 
 
 class ProcessParameters:
@@ -46,8 +46,8 @@ class ProcessParameters:
     @staticmethod
     def print_error_message():
         print("Usage:\n"
-              "rails-load-stats <FILE> [SORTING_TYPE] [--with_stats]\n"
-              "candlepin-load-stats <FILE> [SORTING_TYPE] [--with_stats]\n\n"
+              "rails-load-stats <FILE> [SORTING_TYPE] [--without_stats]\n"
+              "candlepin-load-stats <FILE> [SORTING_TYPE] [--without_stats]\n\n"
               "Possible sorting types are:\n"
               " 1 or 'name': sort by the action and request_type\n"
               " 2 or 'count': sort by the count\n"

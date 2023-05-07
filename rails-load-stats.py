@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 import sys
-from datetime import datetime
 import re
 import time
 from progress_bar import ProgressBarFromFileLines
 from process_parameters import ProcessParameters
 from write_output import TextOutput
 from operator import itemgetter
+from tabulate import tabulate
 
 
 COMPLETED = {'attributes': {2: "Completed"},
@@ -33,29 +33,24 @@ NOT_FOUND_FILLED_LIST = []
 
 ERROR = -1
 IMPLICIT_SORT_TYPE = 7
-IMPLICIT_WITH_STATS = False
-
-PROGRESS_BAR_LENGTH = 30
-
+IMPLICIT_WITHOUT_STATS = False
 
 class ExtractDataLines:
     open_processing_entries: list
     max_open_proc_entries: list
     duration_values: list
     line: list
-    with_stats: int
     plot_data: list
     last_time: float
     output: object
 
-    def __init__(self, with_stats: int, sort_type: int, file_name: str) -> None:
+    def __init__(self, without_stats: int, sort_type: int, file_name: str) -> None:
         self.open_processing_entries = []
         self.max_open_proc_entries = []
         self.duration_values = []
         self.line = []
-        self.with_stats = with_stats
         self.plot_data = []
-        self.output = TextOutput(sort_type-1, with_stats, file_name)
+        self.output = TextOutput(sort_type, without_stats, file_name)
 
     def compute_and_log_time(self, line_time: str) -> float:
         date_time = re.split("T|:|-", line_time)
@@ -93,9 +88,6 @@ class ExtractDataLines:
                  line_time,
                  self.compute_and_log_time(line_time)))
 
-            if self.with_stats:
-                self.plot_data.append(len(self.open_processing_entries))
-
             if len(self.max_open_proc_entries) < len(self.open_processing_entries):
                 self.max_open_proc_entries = self.open_processing_entries.copy()
 
@@ -120,16 +112,14 @@ class ExtractDataLines:
         duration = self.extract_duration_from_entry()
         if duration == NOT_FOUND_POSITION:
             return
-        duration_values_list = NOT_FOUND_FILLED_LIST
         for i in self.duration_values:
             if entry[1] == i[0]:
-                duration_values_list = i[1]
-                break
-        if duration_values_list == NOT_FOUND_FILLED_LIST:
-            duration_value = [entry[1], [duration]]
-            self.duration_values.append(duration_value)
-        else:
-            duration_values_list.append(duration)
+                i[1].append(duration)
+                i[2].append(entry[0])
+                return
+
+        duration_value = [entry[1], [duration], [entry[0]]]
+        self.duration_values.append(duration_value)
 
     def treat_completed_line(self) -> None:
         for entry in self.open_processing_entries:
@@ -158,7 +148,7 @@ class ExtractDataLines:
         if line_type == TASK:
             self.treat_task_line()
 
-    def return_res(self, with_stats):
+    def return_res(self):
         self.output.write_duration_values_list(self.duration_values,
                                                "request_type")
         self.write_max_concurrent_processing()
@@ -167,16 +157,6 @@ class ExtractDataLines:
         else:
             self.output.write_open_processing_entries(
                 self.open_processing_entries, self.last_time)
-        if with_stats:
-            try:
-                from tabulate import tabulate
-            except ModuleNotFoundError as mod_not_found_error:
-                print("ERROR: Library 'tabulate' is not found!\n"
-                      "Install python3 tabulate library, like e.g.:"
-                      "yum install python3-tabulate"
-                      "in Fedora.")
-                print(mod_not_found_error)
-            self.output.return_plot_data(self.plot_data)
         return
 
     def write_max_concurrent_processing(self) -> None:
@@ -200,37 +180,23 @@ class ExtractDataLines:
         print(tabulate(concurrent_entries, headers=col_names))
 
 
-def print_error_message():
-    print("Usage:\n"
-          " rails-load-stats <FILE> [SORTING_TYPE] [--with_stats] \n\n"
-          "rails-load-stats processes a logfile of any Ruby on Rails app "
-          "to analyze where\nthe load to the app comes from.\n\n"
-          "Possible sorting types are:\n"
-          " 1: sort by the name\n"
-          " 2: sort by the count\n"
-          " 3: sort by the min time\n"
-          " 4: sort by the max time\n"
-          " 5: sort by the avg time\n"
-          " 6: sort by the mean time\n"
-          " 7: sort by the sum time / percentage")
-
-
 def main() -> None:
     """ rails-load-stats processes a logfile of any Ruby on Rails app
 to analyze where the load to the app comes from. Inspired by:
 https://github.com/pmoravec/rails-load-stats
 """
-    implicit_options = [IMPLICIT_SORT_TYPE, IMPLICIT_WITH_STATS]
+    implicit_options = [IMPLICIT_SORT_TYPE, IMPLICIT_WITHOUT_STATS]
     pp = ProcessParameters(ERROR)
-    ((sort_type, with_stats), correct) = pp.process_parameters(implicit_options)
+    ((sort_type, without_stats), correct) = pp.process_parameters(implicit_options)
     if not correct:
-        print_error_message()
+        pp.print_error_message()
         return
     log_file_name = sys.argv[1]
 
-    extraction = ExtractDataLines(1, sort_type, log_file_name)
+    extraction = ExtractDataLines(without_stats, sort_type, log_file_name)
+    print("Extracting data from the input file.")
     pb = ProgressBarFromFileLines()
-    number_of_log_file_lines = pb.number_of_lines(log_file_name)
+    number_of_log_file_lines = pb.set_number_of_file_lines(log_file_name)
     if number_of_log_file_lines == 0:
         print(f"Log file {log_file_name} is empty or can not be read.")
         return
@@ -247,15 +213,8 @@ https://github.com/pmoravec/rails-load-stats
         pp.print_error_message()
         return
 
-    extraction.return_res(with_stats)
+    extraction.return_res()
 
 
 if __name__ == "__main__":
-    try:
-        from tabulate import tabulate
-    except ModuleNotFoundError as error:
-        print("ERROR: Library 'tabulate' is not found!\n"
-              "Install python3 tabulate library, like e.g.:"
-              "yum install python3-tabulate"
-              "in Fedora.")
     main()

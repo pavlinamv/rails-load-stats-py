@@ -26,7 +26,7 @@ LINE_TYPE = {'Response:': LineType.RESPONSE,
 OK = 0
 ERROR = -1
 IMPLICIT_SORT_TYPE = 7
-IMPLICIT_WITH_STATS = False
+IMPLICIT_WITHOUT_STATS = False
 
 MASKED_WORDS = {"?": "...",
                 "/products/": "PRODUCT",
@@ -45,12 +45,12 @@ class ExtractDataLine:
     output: object
     sort_type: int
 
-    def __init__(self, sort_type: int, log_file_name: str, with_stats: int):
+    def __init__(self, sort_type: int, log_file_name: str, without_stats: int):
         self.request_data = []
         self.results = {}
         self.max_data = []
         self.sort_type = sort_type
-        self.output = TextOutput(sort_type-1, with_stats, log_file_name)
+        self.output = TextOutput(sort_type, without_stats, log_file_name)
 
     @staticmethod
     def return_line_type(split_line: list):
@@ -187,9 +187,10 @@ class ExtractDataLine:
         for i in self.request_data:
             if i[0] == extracted_data[0]:
                 if (i[1], i[2]) in self.results.keys():
-                    self.results[(i[1], i[2])].append(extracted_data[1])
+                    self.results[(i[1], i[2])][0].append(extracted_data[1])
+                    self.results[(i[1], i[2])][1].append(i[0])
                 else:
-                    self.results[i[1], i[2]] = [extracted_data[1]]
+                    self.results[i[1], i[2]] = [[extracted_data[1]], [i[0]]]
                 self.request_data.remove(i)
                 break
 
@@ -206,7 +207,7 @@ class ExtractDataLine:
     def process_log_file(self, log_file_name: str):
 
         pb = ProgressBarFromFileLines()
-        number_of_log_file_lines = pb.number_of_lines(log_file_name)
+        number_of_log_file_lines = pb.set_number_of_file_lines(log_file_name)
         if number_of_log_file_lines == 0:
             print(f"Log file {log_file_name} is empty or can not be read.")
             return
@@ -224,13 +225,10 @@ class ExtractDataLine:
 
         return OK
 
-    def return_computed_data(self):
-        return self.results, self.max_data, self.request_data
-
     def return_res(self):
         duration_values = []
         for i, j in self.results.items():
-            duration_values.append([i[0]+(5-len(i[0]))*" "+":"+i[1], j])
+            duration_values.append([i[0]+(5-len(i[0]))*" "+":"+i[1], j[0], j[1]])
         self.output.write_duration_values_list(duration_values,
                                                "action: request_type")
         print(f"\n\nMaximally {len(self.max_data)} concurrent requests when processing:")
@@ -277,14 +275,15 @@ def main() -> None:
     logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.DEBUG)
     logging.basicConfig(format='%(asctime)s %(message)s')
 
-    implicit_options = [IMPLICIT_SORT_TYPE, IMPLICIT_WITH_STATS]
+    implicit_options = [IMPLICIT_SORT_TYPE, IMPLICIT_WITHOUT_STATS]
     pp = ProcessParameters(ERROR)
-    ((sort_type, with_stats), correct) = pp.process_parameters(implicit_options,)
+    ((sort_type, without_stats), correct) = pp.process_parameters(implicit_options)
     if not correct:
         pp.print_error_message()
         return
     log_file_name = sys.argv[1]
-    extraction = ExtractDataLine(sort_type, log_file_name, with_stats)
+    print("Extracting data from the input file.")
+    extraction = ExtractDataLine(sort_type, log_file_name, without_stats)
     if extraction.process_log_file(log_file_name) == ERROR:
         return
 
