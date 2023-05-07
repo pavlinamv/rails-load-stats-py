@@ -23,7 +23,6 @@ LINE_TYPE = {'Response:': LineType.RESPONSE,
              'completed': LineType.COMPLETED_JOB,
              'Starting': LineType.STARTING_JOB}
 
-OK = 0
 ERROR = -1
 IMPLICIT_SORT_TYPE = 7
 IMPLICIT_WITHOUT_STATS = False
@@ -221,9 +220,9 @@ class ExtractDataLine:
                     pb.print_bar(line_number)
         except Exception as file_exception:
             print(file_exception)
-            return ERROR
+            return False
 
-        return OK
+        return True
 
     def return_res(self):
         duration_values = []
@@ -284,7 +283,7 @@ def main() -> None:
     log_file_name = sys.argv[1]
     print("Extracting data from the input file.")
     extraction = ExtractDataLine(sort_type, log_file_name, without_stats)
-    if extraction.process_log_file(log_file_name) == ERROR:
+    if not extraction.process_log_file(log_file_name):
         return
 
     extraction.return_res()
