@@ -34,12 +34,13 @@ class TextOutput:
         plt.close()
 
     @staticmethod
-    def print_txt_file(values: list, ids: list, text_file_name: str):
+    def print_txt_file(title: str, values: list, ids: list, text_file_name: str):
         my_list = list(zip(values, ids))
         my_list.sort(reverse=True, key=lambda y: y[0])
 
         try:
             with open(text_file_name, 'w') as f:
+                f.write(f"request_type: {title}\n")
                 for values, ids in my_list:
                     f.write(f"{ids} {values}\n")
         except FileNotFoundError:
@@ -68,7 +69,7 @@ class TextOutput:
             self.print_plot(i[0], i[1], plot_file_name)
             text_file_name = dir_name + \
                              "/data_" + str(line_number) + ".txt"
-            self.print_txt_file(i[1], i[2], text_file_name)
+            self.print_txt_file(i[0], i[1], i[2], text_file_name)
 
         pb.print_bar(number+1)
         print("")
