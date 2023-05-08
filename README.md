@@ -79,8 +79,8 @@ Example of usage:
       Number  Time                 Request ID    Endpoint
     --------  -------------------  ------------  ----------
            0  2023-01-10T03:46:26  2ac5eab0      Test_Praha
-           1  2023-01-10T03:46:26  2ac5eab0      Test_Praha
-           2  2023-01-10T03:46:26  2ac5eab0      Test_Praha
+           1  2023-01-10T03:46:26  5bhuoab0      Test_Praha
+           2  2023-01-10T03:46:26  7sa9sdf2      Test_Praha
     
     No processing requests are open in the end of file.
     
