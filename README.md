@@ -59,39 +59,12 @@ Example output:
 
 
 Example of usage:
-
-    [localhost]$ ./rails-load-stats.py test.log name
-    Extracting data from the input file.
-    |███████████████████████████████| 100.0 %  Estimated time left: 1 sec       
-    there were 11 requests taking 1242 ms (i.e. 0.00 hours, i.e. 0.00 days) in summary
-    
-        request_type      count    min    max    avg    mean    sum    percentage
-    --  --------------  -------  -----  -----  -----  ------  -----  ------------
-    1  Test_Brno             2     34     38     36      36     72          5.8
-    2  Test_Olomouc          5     94    357    198     184    993         79.95
-    3  Test_Praha            3     25     61     40      34    120          9.66
-    4  Test_Pardubice        1     57     57     57      57     57          4.59
-    
-    Creating files in directory './stats_test.log/'.
-    |███████████████████████████████| 100.0 %  Estimated time left: 1 sec       
-    
-    Maximally 3 concurrent requests when processing:
-      Number  Time                 Request ID    Endpoint
-    --------  -------------------  ------------  ----------
-           0  2023-01-10T03:46:26  2ac5eab0      Test_Praha
-           1  2023-01-10T03:46:26  5bhuoab0      Test_Praha
-           2  2023-01-10T03:46:26  7sa9sdf2      Test_Praha
-    
-    No processing requests are open in the end of file.
+   
+![Screenshot_2023-05-08_19-57-29](https://user-images.githubusercontent.com/22654167/236896304-3f19f555-a471-46f1-8d8b-61448dd102a7.png)
     
 Now we can see the list of identificators + times spent on the request for any type of request. Request `Test_Brno` (1st line in the previous table) is in `data_1.txt`, `Test_Olomouc` (2nd line) is in `data_2.txt`, ...
-
-    [localhost]$ more stats_test.log/data_2.txt 
-    2ac5eab2 357
-    2ac5eab5 201
-    2ac5eab3 184
-    2ac5eab1 157
-    2ac5eab4 94
+    
+![Screenshot_2023-05-08_20-01-51](https://user-images.githubusercontent.com/22654167/236897250-fda8420e-e79d-4544-9344-8dc6305450b6.png)
 
 Corresponding `.png` file for Test_Olomouc is in `plot_2.png`
 
