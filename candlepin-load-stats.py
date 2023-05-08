@@ -8,6 +8,7 @@ from process_parameters import ProcessParameters
 from enum import Enum
 from write_output import TextOutput
 from tabulate import tabulate
+from basic_extract_data import ExtractData
 
 
 class LineType(Enum):
@@ -33,7 +34,7 @@ MASKED_WORDS = {"?": "...",
                 "/product/": "PRODUCT"}
 
 
-class ExtractDataLine:
+class ExtractCandlepinData (ExtractData):
     new_line: str
     split_line: list
     request_data: list
@@ -42,7 +43,7 @@ class ExtractDataLine:
     output: object
     sort_type: int
 
-    def __init__(self, sort_type: int, log_file_name: str, without_stats: int):
+    def __init__(self,  without_stats: int, sort_type: int, log_file_name: str):
         self.request_data = []
         self.results = {}
         self.max_data = []
@@ -201,26 +202,6 @@ class ExtractDataLine:
         elif x in (LineType.RESPONSE, LineType.COMPLETED_JOB):
             self.process_response_or_completed_line(x)
 
-    def process_log_file(self, log_file_name: str):
-
-        pb = ProgressBarFromFileLines()
-        number_of_log_file_lines = pb.set_number_of_file_lines(log_file_name)
-        if number_of_log_file_lines == 0:
-            print(f"Log file {log_file_name} is empty or can not be read.")
-            return
-
-        try:
-            with open(log_file_name, 'r') as file:
-                line_number = 0
-                for new_line in file:
-                    line_number += 1
-                    self.process_line(new_line)
-                    pb.print_bar(line_number)
-        except Exception as file_exception:
-            print(file_exception)
-            return False
-
-        return True
 
     def return_res(self):
         duration_values = []
@@ -277,9 +258,11 @@ def main() -> None:
     if not correct:
         pp.print_error_message()
         return
+
     log_file_name = sys.argv[1]
+    extraction = ExtractCandlepinData(without_stats, sort_type, log_file_name)
     print("Extracting data from the input file.")
-    extraction = ExtractDataLine(sort_type, log_file_name, without_stats)
+
     if not extraction.process_log_file(log_file_name):
         return
 

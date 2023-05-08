@@ -8,7 +8,7 @@ from process_parameters import ProcessParameters
 from write_output import TextOutput
 from operator import itemgetter
 from tabulate import tabulate
-
+from basic_extract_data import ExtractData
 
 COMPLETED = {'attributes': {2: "Completed"},
              'min_line_len': 6,
@@ -33,7 +33,7 @@ NOT_FOUND_FILLED_LIST = []
 
 ERROR = -1
 
-class ExtractDataLines:
+class ExtractRailsData(ExtractData):
     open_processing_entries: list
     max_open_proc_entries: list
     duration_values: list
@@ -188,28 +188,13 @@ https://github.com/pmoravec/rails-load-stats
     if not correct:
         pp.print_error_message()
         return
+
     log_file_name = sys.argv[1]
-
-    extraction = ExtractDataLines(without_stats, sort_type, log_file_name)
+    extraction = ExtractRailsData(without_stats, sort_type, log_file_name)
     print("Extracting data from the input file.")
-    pb = ProgressBarFromFileLines()
-    number_of_log_file_lines = pb.set_number_of_file_lines(log_file_name)
-    if number_of_log_file_lines == 0:
-        print(f"Log file {log_file_name} is empty or can not be read.")
-        return
 
-    try:
-        with open(log_file_name, 'r') as file:
-            i = 0
-            for new_line in file:
-                i += 1
-                extraction.process_line(new_line)
-                pb.print_bar(i)
-    except Exception as file_exception:
-        print(file_exception)
-        pp.print_error_message()
+    if not extraction.process_log_file(log_file_name):
         return
-
     extraction.return_res()
 
 
