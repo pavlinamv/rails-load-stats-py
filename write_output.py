@@ -48,7 +48,7 @@ class TextOutput:
 
     def create_files(self):
         dir_name = './stats_' + self.file_name
-        print(f"\nCreating stats files in directory {dir_name}.")
+        print(f"\nCreating files in directory '{dir_name}/'.")
         try:
             os.mkdir(dir_name)
         except FileExistsError:
@@ -71,6 +71,7 @@ class TextOutput:
             self.print_txt_file(i[1], i[2], text_file_name)
 
         pb.print_bar(number+1)
+        print("")
 
 
     def fill_result_table(self) -> None:
