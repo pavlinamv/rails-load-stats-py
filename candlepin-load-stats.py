@@ -24,8 +24,6 @@ LINE_TYPE = {'Response:': LineType.RESPONSE,
              'Starting': LineType.STARTING_JOB}
 
 ERROR = -1
-IMPLICIT_SORT_TYPE = 7
-IMPLICIT_WITHOUT_STATS = False
 
 MASKED_WORDS = {"?": "...",
                 "/products/": "PRODUCT",
@@ -274,9 +272,8 @@ def main() -> None:
     logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.DEBUG)
     logging.basicConfig(format='%(asctime)s %(message)s')
 
-    implicit_options = [IMPLICIT_SORT_TYPE, IMPLICIT_WITHOUT_STATS]
     pp = ProcessParameters(ERROR)
-    ((sort_type, without_stats), correct) = pp.process_parameters(implicit_options)
+    ((sort_type, without_stats), correct) = pp.process_parameters()
     if not correct:
         pp.print_error_message()
         return

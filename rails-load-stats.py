@@ -32,8 +32,6 @@ NOT_FOUND_FILLED_LIST = []
 
 
 ERROR = -1
-IMPLICIT_SORT_TYPE = 7
-IMPLICIT_WITHOUT_STATS = False
 
 class ExtractDataLines:
     open_processing_entries: list
@@ -185,9 +183,8 @@ def main() -> None:
 to analyze where the load to the app comes from. Inspired by:
 https://github.com/pmoravec/rails-load-stats
 """
-    implicit_options = [IMPLICIT_SORT_TYPE, IMPLICIT_WITHOUT_STATS]
     pp = ProcessParameters(ERROR)
-    ((sort_type, without_stats), correct) = pp.process_parameters(implicit_options)
+    ((sort_type, without_stats), correct) = pp.process_parameters()
     if not correct:
         pp.print_error_message()
         return

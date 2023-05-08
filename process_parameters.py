@@ -2,11 +2,12 @@ import sys
 
 
 OPTIONS = {"1": (0, 0), "2": (0, 1), "3": (0, 2), "4": (0, 3),
-           "5": (0, 4), "6": (0, 5), "7": (0, 6), "8": (0, 7),
+           "5": (0, 4), "6": (0, 5), "7": (0, 6), "8": (0, 6),
            "name": (0, 0), "count": (0, 1), "min": (0, 2), "max": (0, 3),
            "avg": (0, 4), "mean": (0, 5), "percentage": (0, 6),
            "sum": (0, 6), "--without_stats": (1, True)}
-
+IMPLICIT_SORT_TYPE = 6
+IMPLICIT_WITHOUT_STATS = False
 
 class ProcessParameters:
     error_value: int
@@ -21,9 +22,10 @@ class ProcessParameters:
                 return option_numerical_name, option_value
         return self.error_value, self.error_value
 
-    def process_parameters(self, input_options: list) -> tuple:
+    def process_parameters(self) -> tuple:
         """Function process input parameters.
     """
+        input_options = [IMPLICIT_SORT_TYPE, IMPLICIT_WITHOUT_STATS]
 
         possible_options = max(j for (i, (j, k)) in OPTIONS.items())
 
