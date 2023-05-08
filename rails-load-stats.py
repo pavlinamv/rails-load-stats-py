@@ -3,7 +3,6 @@
 import sys
 import re
 import time
-from progress_bar import ProgressBarFromFileLines
 from process_parameters import ProcessParameters
 from write_output import TextOutput
 from operator import itemgetter
@@ -41,6 +40,8 @@ class ExtractRailsData(ExtractData):
     plot_data: list
     last_time: float
     output: object
+    file_name: str
+
 
     def __init__(self, without_stats: int, sort_type: int, file_name: str) -> None:
         self.open_processing_entries = []
@@ -49,7 +50,7 @@ class ExtractRailsData(ExtractData):
         self.line = []
         self.plot_data = []
         self.output = TextOutput(sort_type, without_stats, file_name)
-
+        self.file_name = file_name
     def compute_and_log_time(self, line_time: str) -> float:
         date_time = re.split("T|:|-", line_time)
         i, j, k, l, m, n = date_time
@@ -189,11 +190,10 @@ https://github.com/pmoravec/rails-load-stats
         pp.print_error_message()
         return
 
-    log_file_name = sys.argv[1]
-    extraction = ExtractRailsData(without_stats, sort_type, log_file_name)
+    extraction = ExtractRailsData(without_stats, sort_type, sys.argv[1])
     print("Extracting data from the input file.")
 
-    if not extraction.process_log_file(log_file_name):
+    if not extraction.process_log_file():
         return
     extraction.return_res()
 

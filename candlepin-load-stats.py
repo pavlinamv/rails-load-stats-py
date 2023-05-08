@@ -42,13 +42,15 @@ class ExtractCandlepinData (ExtractData):
     max_data: list
     output: object
     sort_type: int
+    file_name: str
 
-    def __init__(self,  without_stats: int, sort_type: int, log_file_name: str):
+    def __init__(self,  without_stats: int, sort_type: int, file_name: str):
         self.request_data = []
         self.results = {}
         self.max_data = []
         self.sort_type = sort_type
-        self.output = TextOutput(sort_type, without_stats, log_file_name)
+        self.output = TextOutput(sort_type, without_stats, file_name)
+        self.file_name = file_name
 
     @staticmethod
     def return_line_type(split_line: list):
@@ -259,11 +261,10 @@ def main() -> None:
         pp.print_error_message()
         return
 
-    log_file_name = sys.argv[1]
-    extraction = ExtractCandlepinData(without_stats, sort_type, log_file_name)
+    extraction = ExtractCandlepinData(without_stats, sort_type, sys.argv[1])
     print("Extracting data from the input file.")
 
-    if not extraction.process_log_file(log_file_name):
+    if not extraction.process_log_file():
         return
 
     extraction.return_res()
