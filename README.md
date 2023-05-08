@@ -60,15 +60,15 @@ Example output:
 
 Example of usage:
    
-![Screenshot_2023-05-08_19-57-29](https://user-images.githubusercontent.com/22654167/236896304-3f19f555-a471-46f1-8d8b-61448dd102a7.png)
+![Screenshot_2023-05-08_20-06-01](https://user-images.githubusercontent.com/22654167/236898372-eef71a87-cd42-4cae-9915-22939ff6bceb.png)
     
 Now we can see the list of identificators + times spent on the request for any type of request. Request `Test_Brno` (1st line in the previous table) is in `data_1.txt`, `Test_Olomouc` (2nd line) is in `data_2.txt`, ...
     
-![Screenshot_2023-05-08_20-01-51](https://user-images.githubusercontent.com/22654167/236897250-fda8420e-e79d-4544-9344-8dc6305450b6.png)
+![Screenshot_2023-05-08_20-07-02](https://user-images.githubusercontent.com/22654167/236898470-8a9279ee-41e9-452d-a7ef-864c6cd17c9d.png)
 
 Corresponding `.png` file for Test_Olomouc is in `plot_2.png`
 
-    [localhost]$ gimp stats_test.log/plot_2.png
+![Screenshot_2023-05-08_20-07-29](https://user-images.githubusercontent.com/22654167/236898574-23476373-e11a-45c3-88b6-34cb8033fb83.png)
 
 ![plot_2](https://user-images.githubusercontent.com/22654167/236889579-cd4d5df6-63eb-4a60-954f-686c41536ced.jpg)
 
