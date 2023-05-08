@@ -11,38 +11,7 @@ rails-load-stats-py is faster than the original bash version (especially for lar
 - if "--without_stats" option is not used, it creates directory "`stats` + name of the input file" and for each request type it creates two files in the directory:
     - plot with the times of all requests of the type (sorted by the timestamp of the request)
     - text file containing the time of the request and its unique id (sorted by the size of time spent on the request)
-
-Example output:
-  
-    there were 58960 requests taking 5187479 ms (i.e. 1.44 hours, i.e. 0.06 days) in summary
-
     
-        request_type                                        count    min    max    avg    mean      sum    percentage
-    --  ------------------------------------------------  -------  -----  -----  -----  ------  -------  ------------           
-    1  MachineTelemetriesController#forward_request          948     37  20350   2271     280  2153800         41.12
-    2  CandlepinProxiesController#get                      25743     20  10322     34      23   879667         16.36
-    3  CandlepinProxiesController#serials                  11348     28   8643     50      35   576124         11.11
-    4  HostsController#facts                                 734    580   2043    617     590   453464          8.74
-    5  CandlepinProxiesController#server_status            11375     18   4612     27      21   309910          5.97
-
-    ... 
-    ...
-    15  SmartProxiesController#pulp_storage                     1    149    149    149     149      149          0
-    16  SmartProxiesController#pulp_status                      1    215    215    215     215      215          0
-
-    
-    
-    Maximally 14 concurrent requests when processing:
-      Number  Time                 Request ID    Endpoint
-    --------  -------------------  ------------  ----------------------------------------
-       0  2023-01-10T05:47:40  9f6f862e      CandlepinProxiesController#get
-       1  2023-01-10T05:47:40  7a94dbb1      CandlepinProxiesController#get
-    ...
-    ...
-       6  2023-01-10T05:47:41  793acd43      CandlepinProxiesController#get
-    
-    No processing requests are open in the end of file.
-
 
 ## Usage: 
     rails-load-stats <FILE> [SORTING_TYPE] [--without_stats]
