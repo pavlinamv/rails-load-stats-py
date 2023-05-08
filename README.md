@@ -85,6 +85,7 @@ Example of usage:
     No processing requests are open in the end of file.
     
 Now we can see the list of identificators + times spent on the request for any type of request. Request `Test_Brno` (1st line in the previous table) is in `data_1.txt`, `Test_Olomouc` (2nd line) is in `data_2.txt`, ...
+
     [localhost]$ more stats_test.log/data_2.txt 
     2ac5eab2 357
     2ac5eab5 201
@@ -92,7 +93,8 @@ Now we can see the list of identificators + times spent on the request for any t
     2ac5eab1 157
     2ac5eab4 94
 
-Corresponding png for Test_Olomouc is in `plot_2.png`
+Corresponding `.png` file for Test_Olomouc is in `plot_2.png`
+
     [localhost]$ gimp stats_test.log/plot_2.png
 
 ![plot_2](https://user-images.githubusercontent.com/22654167/236889579-cd4d5df6-63eb-4a60-954f-686c41536ced.jpg)
