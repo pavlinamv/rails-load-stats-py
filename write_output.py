@@ -70,6 +70,9 @@ class TextOutput:
                              "/data_" + str(line_number) + ".txt"
             self.print_txt_file(i[1], i[2], text_file_name)
 
+        pb.print_bar(number+1)
+
+
     def fill_result_table(self) -> None:
         self.number_of_tasks = sum((len(i[1])) for i in self.duration_values)
         self.whole_time = sum((sum(i[1])) for i in self.duration_values)
