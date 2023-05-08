@@ -33,8 +33,7 @@ Example of usage:
     
 Now we can see the list of identificators + times spent on the request for any type of request. Request `Test_Brno` (1st line in the previous table) is in `data_1.txt`, `Test_Olomouc` (2nd line) is in `data_2.txt`, ...
     
-![Screenshot_2023-05-08_20-07-02](https://user-images.githubusercontent.com/22654167/236898470-8a9279ee-41e9-452d-a7ef-864c6cd17c9d.png)
-
+![Screenshot_2023-05-08_20-07-04](https://user-images.githubusercontent.com/22654167/236915868-70defac6-02ae-48eb-b203-be0ff5cf7d5e.png)
 Corresponding `.png` file for Test_Olomouc is in `plot_2.png`
 
 ![Screenshot_2023-05-08_20-07-29](https://user-images.githubusercontent.com/22654167/236898574-23476373-e11a-45c3-88b6-34cb8033fb83.png)
