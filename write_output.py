@@ -40,9 +40,15 @@ class TextOutput:
 
         try:
             with open(text_file_name, 'w') as f:
-                f.write(f"request_type: {title}\n")
+                f.write(f"{title}\n")
+                f.write(len(title)*"-"+"\n\n")
+                f.write(f"Table of '{title}' requests duration and its ")
+                f.write("corresponding unique ID. The table is sorted ")
+                f.write("by the size of duration in ascending order. \n\n")
+                f.write("duration    request ID\n")
+                f.write("----------  --------------------------------\n")
                 for values, ids in my_list:
-                    f.write(f"{ids} {values}\n")
+                    f.write(f"{values:8d}     {ids}\n")
         except FileNotFoundError:
             print(f"The file {text_file_name} can not be open")
 
@@ -65,10 +71,10 @@ class TextOutput:
                     line_number = table_line[0]
 
             plot_file_name = dir_name + \
-                             "/plot_" + str(line_number) + ".png"
+                             "/plot_" + '{:0=3}'.format(line_number) + ".png"
             self.print_plot(i[0], i[1], plot_file_name)
             text_file_name = dir_name + \
-                             "/data_" + str(line_number) + ".txt"
+                             "/data_" + '{:0=3}'.format(line_number) + ".txt"
             self.print_txt_file(i[0], i[1], i[2], text_file_name)
 
         print("")
