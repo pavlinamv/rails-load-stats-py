@@ -97,13 +97,9 @@ class ExtractCandlepinData (ExtractData):
                     request_action = i[4:].split("=")[1]
                     request_action = request_action[:-1]
         except IndexError as exception:
-            logging.info(f"'extract_request_data' can not extract data"
-                         f" (IndexError) in row: {self.new_line}.\n"
-                         f"{exception}")
+            print(f"{exception}")
             return ()
         if "" in (request_type, request_action):
-            logging.info(f"'extract_request_data' can not extract data"
-                         f" in row: {self.new_line}")
             return ()
         return identification, request_action, request_type
 
@@ -120,14 +116,10 @@ class ExtractCandlepinData (ExtractData):
                         and (self.split_line[i+1][:8] == "job_key=")):
                     identification = self.split_line[i][5:]
         except IndexError as exception:
-            logging.info(f"'extract_job_start_data' can not extract data"
-                         f" (IndexError) in row: {self.new_line}.\n"
-                         f"{exception}")
+            print(f"{exception}")
             return ()
 
         if "" in (identification, request_type):
-            logging.info(f"'extract_job_start_data' can not extract data"
-                         f"in row: {self.new_line}")
             return ()
         return identification, "<JOB>", request_type
 
@@ -139,12 +131,9 @@ class ExtractCandlepinData (ExtractData):
                 if i[:4] == "time":
                     execution_time = int(i.split("=")[1])
         except IndexError as exception:
-            logging.info(f"'extract_response_data' can not extract data"
-                         f"(IndexError) in row: {self.new_line}\n {exception}")
+            print(f"{exception}")
             return ()
         if (execution_time < 0) or (identification == ""):
-            logging.info(f"'extract_response_data' can not extract data in"
-                         f"row: {self.new_line}")
             return ()
         return identification, execution_time
 
@@ -152,20 +141,14 @@ class ExtractCandlepinData (ExtractData):
         try:
             execution_time_text = self.split_line[-1]
             if execution_time_text[-3:] != "ms\n":
-                logging.info(f"'extract_completed_job_data' can not extract data"
-                             f"in row: {self.new_line}")
                 return ()
             execution_time = int(execution_time_text[:-3])
             for line_part in self.split_line:
                 if line_part[:5] == "[job=":
                     return line_part[5:], execution_time
         except IndexError as exception:
-            logging.info(f"'extract_completed_job_data' can not extract data"
-                         f"in row: {self.new_line}\n {exception}")
+            print(f"{exception}")
             return ()
-
-        logging.info(f"'extract_completed_job_data' can not extract data"
-                     f"in row: {self.new_line}")
         return ()
 
     def process_starting_or_request_line(self, x: LineType):
@@ -252,9 +235,6 @@ def print_computed_data(data, sort_type: int):
 
 
 def main() -> None:
-    logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.DEBUG)
-    logging.basicConfig(format='%(asctime)s %(message)s')
-
     pp = ProcessParameters(ERROR)
     ((sort_type, without_stats), correct) = pp.process_parameters()
     if not correct:
