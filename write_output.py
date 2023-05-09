@@ -58,7 +58,7 @@ class TextOutput:
         pb = ProgressBarFromFileLines()
         pb.set_number_of_entries(len(self.duration_values))
         for (number, i) in enumerate(self.duration_values):
-            pb.print_bar(number)
+            pb.print_bar(number+1)
             line_number = 0
             for table_line in self.result_table:
                 if table_line[1] == i[0]:
@@ -71,7 +71,6 @@ class TextOutput:
                              "/data_" + str(line_number) + ".txt"
             self.print_txt_file(i[0], i[1], i[2], text_file_name)
 
-        pb.print_bar(number+1)
         print("")
 
 
