@@ -3,8 +3,6 @@
 import sys
 import re
 import time
-from process_parameters import ProcessParameters
-from write_output import TextOutput
 from operator import itemgetter
 from tabulate import tabulate
 from basic_extract_data import ExtractData
@@ -30,8 +28,6 @@ NOT_FOUND_POSITION = -1
 NOT_FOUND_FILLED_LIST = []
 
 
-ERROR = -1
-
 class ExtractRailsData(ExtractData):
     open_processing_entries: list
     max_open_proc_entries: list
@@ -42,15 +38,16 @@ class ExtractRailsData(ExtractData):
     output: object
     file_name: str
 
+    def __init__(self, file_name: str) -> None:
+        super().init_file_extraction(file_name)
 
-    def __init__(self, without_stats: int, sort_type: int, file_name: str) -> None:
         self.open_processing_entries = []
         self.max_open_proc_entries = []
         self.duration_values = []
         self.line = []
         self.plot_data = []
-        self.output = TextOutput(sort_type, without_stats, file_name)
         self.file_name = file_name
+
     def compute_and_log_time(self, line_time: str) -> float:
         date_time = re.split("T|:|-", line_time)
         i, j, k, l, m, n = date_time
@@ -177,21 +174,12 @@ class ExtractRailsData(ExtractData):
                      "Request", "IDEndpoint"]
         print(tabulate(concurrent_entries, headers=col_names))
 
-
 def main() -> None:
     """ rails-load-stats processes a logfile of any Ruby on Rails app
 to analyze where the load to the app comes from. Inspired by:
 https://github.com/pmoravec/rails-load-stats
 """
-    pp = ProcessParameters(ERROR)
-    ((sort_type, without_stats), correct) = pp.process_parameters()
-    if not correct:
-        pp.print_error_message()
-        return
-
-    extraction = ExtractRailsData(without_stats, sort_type, sys.argv[1])
-    print("Extracting data from the input file.")
-
+    extraction = ExtractRailsData(sys.argv[1])
     if not extraction.process_log_file():
         return
     extraction.return_res()

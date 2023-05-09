@@ -1,7 +1,22 @@
 from progress_bar import ProgressBarFromFileLines
+from process_parameters import ProcessParameters
+from write_output import TextOutput
 
-class ExtractData ():
-    file_name: str
+ERROR = -1
+
+class ExtractData:
+
+    def __init__(self):
+        self.output = None
+
+    def init_file_extraction(self, file_name: str) -> None:
+        pp = ProcessParameters(ERROR)
+        ((sort_type, without_stats), correct) = pp.process_parameters()
+        if not correct:
+            pp.print_error_message()
+            return
+        self.output = TextOutput(sort_type, without_stats, file_name)
+        print("Extracting data from the input file.")
 
     def process_log_file(self):
 

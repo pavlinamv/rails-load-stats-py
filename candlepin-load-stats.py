@@ -1,10 +1,9 @@
 #!/usr/bin/env python
+
 import sys
 import logging
 import statistics
 import uuid
-from progress_bar import ProgressBarFromFileLines
-from process_parameters import ProcessParameters
 from enum import Enum
 from write_output import TextOutput
 from tabulate import tabulate
@@ -24,7 +23,6 @@ LINE_TYPE = {'Response:': LineType.RESPONSE,
              'completed': LineType.COMPLETED_JOB,
              'Starting': LineType.STARTING_JOB}
 
-ERROR = -1
 
 MASKED_WORDS = {"?": "...",
                 "/products/": "PRODUCT",
@@ -41,15 +39,14 @@ class ExtractCandlepinData (ExtractData):
     results: dict
     max_data: list
     output: object
-    sort_type: int
     file_name: str
 
-    def __init__(self,  without_stats: int, sort_type: int, file_name: str):
+    def __init__(self, file_name: str) -> None:
+        super().init_file_extraction(file_name)
+
         self.request_data = []
         self.results = {}
         self.max_data = []
-        self.sort_type = sort_type
-        self.output = TextOutput(sort_type, without_stats, file_name)
         self.file_name = file_name
 
     @staticmethod
@@ -207,22 +204,12 @@ class ExtractCandlepinData (ExtractData):
 
         return
 
+
 def main() -> None:
-    pp = ProcessParameters(ERROR)
-    ((sort_type, without_stats), correct) = pp.process_parameters()
-    if not correct:
-        pp.print_error_message()
-        return
-
-    extraction = ExtractCandlepinData(without_stats, sort_type, sys.argv[1])
-    print("Extracting data from the input file.")
-
+    extraction = ExtractCandlepinData(sys.argv[1])
     if not extraction.process_log_file():
         return
-
     extraction.return_res()
-
-    return
 
 if __name__ == "__main__":
     main()
