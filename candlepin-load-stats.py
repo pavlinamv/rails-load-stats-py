@@ -207,33 +207,6 @@ class ExtractCandlepinData (ExtractData):
 
         return
 
-
-def print_computed_data(data, sort_type: int):
-    """ Print computed data
-    """
-    number_of_tasks = sum(len(j) for j in data.values())
-    whole_time = sum(sum(j) for j in data.values())
-    print(f"there were {number_of_tasks} requests "
-          f"taking {whole_time} ms "
-          f"(i.e. {whole_time / 3600_000:.2f} hours, "
-          f"i.e. {whole_time / 3600_000 / 24:.2f} days) in summary\n")
-
-    data_x = []
-    for i, j in data.items():
-        percentage = round((sum(j) / whole_time) * 100, 2)
-        data_x.append((i[0], i[1], len(j), min(j), max(j),
-                       int(statistics.mean(j)),
-                       int(statistics.median(j)),
-                       sum(j),
-                       percentage))
-
-    data_x.sort(key=lambda x: x[sort_type], reverse=True)
-    col_names = ["action", "request_type", "count",
-                 "min", "max", "avg",
-                 "mean", "sum", "percentage"]
-    print(tabulate(data_x, headers=col_names))
-
-
 def main() -> None:
     pp = ProcessParameters(ERROR)
     ((sort_type, without_stats), correct) = pp.process_parameters()
@@ -250,7 +223,6 @@ def main() -> None:
     extraction.return_res()
 
     return
-
 
 if __name__ == "__main__":
     main()
