@@ -51,7 +51,7 @@ class ProcessParameters:
               "rails-load-stats <FILE> [SORTING_TYPE] [--without_stats]\n"
               "candlepin-load-stats <FILE> [SORTING_TYPE] [--without_stats]\n\n"
               "Possible sorting types are:\n"
-              " 1 or 'name': sort by the action and request_type\n"
+              " 1 or 'name': sort by the request_type\n"
               " 2 or 'count': sort by the count\n"
               " 3 or 'min': sort by the min time\n"
               " 4 or 'max': sort by the max time\n"

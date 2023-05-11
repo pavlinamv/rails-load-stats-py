@@ -18,7 +18,7 @@ rails-load-stats-py is faster than the original bash version (especially for lar
     candlepin-load-stats <FILE> [SORTING_TYPE] [--without_stats]
 
         Possible sorting types are:
-            1 or 'name': sort by the action and request_type
+            1 or 'name': sort by the request_type
             2 or 'count': sort by the count
             3 or 'min': sort by the min time
             4 or 'max': sort by the max time
@@ -29,16 +29,17 @@ rails-load-stats-py is faster than the original bash version (especially for lar
 
 Example of usage:
    
-![Screenshot_2023-05-08_20-06-01](https://user-images.githubusercontent.com/22654167/236898372-eef71a87-cd42-4cae-9915-22939ff6bceb.png)
-    
-Now we can see the list of identificators + times spent on the request for any type of request. Request `Test_Brno` (1st line in the previous table) is in `data_1.txt`, `Test_Olomouc` (2nd line) is in `data_2.txt`, ...
-    
-![Screenshot_2023-05-08_20-07-04](https://user-images.githubusercontent.com/22654167/236915868-70defac6-02ae-48eb-b203-be0ff5cf7d5e.png)
-Corresponding `.png` file for Test_Olomouc is in `plot_2.png`
+![Screenshot_2023-05-10_06-211](https://github.com/pavlinamv/rails-load-stats-py/assets/22654167/f0f85965-def7-4ff9-9115-ce4ea6d85f63)
 
-![Screenshot_2023-05-08_20-07-29](https://user-images.githubusercontent.com/22654167/236898574-23476373-e11a-45c3-88b6-34cb8033fb83.png)
+Now we can see the list of identificators + times spent on the request for any type of request. Request `PuppetcaController#index` (1st line in the previous table) is in `data_1.txt`, `HostsController#index` (2nd line) is in `data_2.txt`, ... 
 
-![plot_2](https://user-images.githubusercontent.com/22654167/236889579-cd4d5df6-63eb-4a60-954f-686c41536ced.jpg)
+![Screenshot_2023-05-11_07-17-15](https://github.com/pavlinamv/rails-load-stats-py/assets/22654167/7d0b9bee-1e2b-4267-8fc5-0fc7000287d3)
+.
+Corresponding `.png` file for `PuppetcaController#index` is in `plot_2.png`. In the file times spent on the request is depicted according to time order of the requests.
+
+![Screenshot_2023-05-10_06-37-56](https://github.com/pavlinamv/rails-load-stats-py/assets/22654167/d0d3dcb8-f268-4523-8fad-a586f33acbc1)
+
+![plot_001](https://github.com/pavlinamv/rails-load-stats-py/assets/22654167/05484dae-1d45-48f5-b500-0f3c0b8dba89)
 
 
 ## Requirements:
