@@ -168,8 +168,8 @@ class ExtractRailsData(ExtractData):
         print(f"\n{len(self.open_processing_entries)} processing requests are"
               f" not closed in the end of file:")
         concurrent_entries = []
-        for (i, (j, k, l, m, n)) in list(enumerate(self.open_processing_entries, 1)):
-            concurrent_entries.append((i, self.last_time-n, l, j, k))
+        for (i, (j, k, l, _, m)) in list(enumerate(self.open_processing_entries, 1)):
+            concurrent_entries.append((i, self.last_time-m, l, j, k))
         col_names = ["Number", " Pending time (s)", "Time stamp",
                      "Request", "IDEndpoint"]
         print(tabulate(concurrent_entries, headers=col_names))
