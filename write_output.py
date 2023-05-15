@@ -54,7 +54,7 @@ class TextOutput:
 
 
     def create_files(self):
-        dir_name = './stats_' + self.file_name
+        dir_name = './stats_' + self.file_name.replace(os.path.sep, '_')
         print(f"\nCreating files in directory '{dir_name}/'.")
         try:
             os.mkdir(dir_name)
