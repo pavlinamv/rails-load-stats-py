@@ -40,12 +40,12 @@ class ProgressBarFromFileLines:
         if self.last_printed_tenth_of_percentage >= tenth_of_percentage:
             return
         half_percentage = int((tenth_of_percentage/1000) * (BAR_WIDTH + 1))
-        bar = chr(9608) * half_percentage + " " * (BAR_WIDTH - half_percentage)
+        new_bar = chr(9608) * half_percentage + " " * (BAR_WIDTH - half_percentage)
         now = datetime.now()
         left = (self.all_entries - done_lines) * (now - self.start_time) / done_lines
         sec = int(left.total_seconds())
-        text = f"\r|{bar}| {tenth_of_percentage/10:.1f} %  " +\
-               f"Estimated time left: "
+        text = f"\r|{new_bar}| {tenth_of_percentage/10:.1f} %  " +\
+               "Estimated time left: "
         if sec > 60:
             text += f"{format(int(sec / 60))} min "
         text += f"{format(int(sec % 60)+1)} sec       "
