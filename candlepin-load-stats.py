@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 
 import sys
-import logging
-import statistics
 import uuid
 from enum import Enum
-from write_output import TextOutput
 from tabulate import tabulate
 from basic_extract_data import ExtractData
 
@@ -201,8 +198,6 @@ class ExtractCandlepinData (ExtractData):
             print(f"\n{len(self.request_data)} processing requests are not closed in the end of file")
             col_names = ["id", "action", "request_type"]
             print(tabulate(self.request_data, headers=col_names))
-
-        return
 
 
 def main() -> None:

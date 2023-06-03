@@ -152,7 +152,6 @@ class ExtractRailsData(ExtractData):
             print("\nNo processing requests are open in the end of file.\n")
         else:
             self.write_open_processing_entries()
-        return
 
     def write_max_concurrent_processing(self) -> None:
         print(f"\nMaximally {len(self.max_open_proc_entries)} concurrent "
