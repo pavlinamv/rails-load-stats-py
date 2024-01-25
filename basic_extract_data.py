@@ -9,14 +9,15 @@ class ExtractData:
     def __init__(self):
         self.output = None
 
-    def init_file_extraction(self, file_name: str) -> None:
+    def init_file_extraction(self, file_name: str) -> bool:
         pp = ProcessParameters(ERROR)
         ((sort_type, without_stats), correct) = pp.process_parameters()
         if not correct:
             pp.print_error_message()
-            return
+            return False
         self.output = TextOutput(sort_type, without_stats, file_name)
         print("Extracting data from the input file.")
+        return True
 
     def process_log_file(self):
 

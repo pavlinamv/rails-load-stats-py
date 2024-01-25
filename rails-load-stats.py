@@ -37,10 +37,10 @@ class ExtractRailsData(ExtractData):
     last_time: float
     output: object
     file_name: str
+    init_error: bool;
 
-    def __init__(self, file_name: str) -> None:
-        super().init_file_extraction(file_name)
-
+    def __init__(self, file_name: str):
+        self.init_error = not(super().init_file_extraction(file_name))
         self.open_processing_entries = []
         self.max_open_proc_entries = []
         self.duration_values = []
@@ -179,7 +179,7 @@ to analyze where the load to the app comes from. Inspired by:
 https://github.com/pmoravec/rails-load-stats
 """
     extraction = ExtractRailsData(sys.argv[1])
-    if not extraction.process_log_file():
+    if extraction.init_error or (not extraction.process_log_file()):
         return
     extraction.return_res()
 

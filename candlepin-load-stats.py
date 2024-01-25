@@ -37,10 +37,10 @@ class ExtractCandlepinData (ExtractData):
     max_data: list
     output: object
     file_name: str
+    init_error: bool;
 
     def __init__(self, file_name: str) -> None:
-        super().init_file_extraction(file_name)
-
+        self.init_error = not(super().init_file_extraction(file_name))
         self.request_data = []
         self.results = {}
         self.max_data = []
@@ -202,7 +202,7 @@ class ExtractCandlepinData (ExtractData):
 
 def main() -> None:
     extraction = ExtractCandlepinData(sys.argv[1])
-    if not extraction.process_log_file():
+    if extraction.init_error or (not extraction.process_log_file()):
         return
     extraction.return_res()
 
