@@ -31,6 +31,7 @@ NOT_FOUND_FILLED_LIST = []
 class ExtractRailsData(ExtractData):
     open_processing_entries: list
     max_open_proc_entries: list
+    max_id: dict
     duration_values: list
     line: list
     plot_data: list
@@ -47,6 +48,7 @@ class ExtractRailsData(ExtractData):
         self.line = []
         self.plot_data = []
         self.file_name = file_name
+        self.max_id = {}
 
     def compute_and_log_time(self, line_time: str) -> float:
         date_time = re.split("T|:|-", line_time)
@@ -109,6 +111,12 @@ class ExtractRailsData(ExtractData):
         if duration == NOT_FOUND_POSITION:
             return
         for i in self.duration_values:
+            if (entry[1] in self.max_id):
+                if (self.max_id[entry[1]][0]<duration):
+                    self.max_id[entry[1]]=[duration, entry[0]]
+            else:
+                self.max_id[entry[1]]=[duration, entry[0]]
+
             if entry[1] == i[0]:
                 i[1].append(duration)
                 i[2].append(entry[0])
@@ -146,7 +154,8 @@ class ExtractRailsData(ExtractData):
 
     def return_res(self):
         self.output.write_duration_values_list(self.duration_values,
-                                               "request_type")
+                                               "request_type",
+                                                self.max_id)
         self.write_max_concurrent_processing()
         if len(self.open_processing_entries) == 0:
             print("\nNo processing requests are open in the end of file.\n")

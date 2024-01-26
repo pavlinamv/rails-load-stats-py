@@ -28,6 +28,7 @@ MASKED_WORDS = {"?": "...",
                 "/pools/": "POOL",
                 "/product/": "PRODUCT"}
 
+TAB_ID_LEN = 8
 
 class ExtractCandlepinData (ExtractData):
     new_line: str
@@ -35,6 +36,7 @@ class ExtractCandlepinData (ExtractData):
     request_data: list
     results: dict
     max_data: list
+    max_id: dict
     output: object
     file_name: str
     init_error: bool;
@@ -45,6 +47,7 @@ class ExtractCandlepinData (ExtractData):
         self.results = {}
         self.max_data = []
         self.file_name = file_name
+        self.max_id = {}
 
     @staticmethod
     def compose_name(part1:str , part2: str):
@@ -166,6 +169,14 @@ class ExtractCandlepinData (ExtractData):
         if extracted_data == tuple():
             return
         for i in self.request_data:
+            text_id = extracted_data[0][0:TAB_ID_LEN];
+            action_request_value = self.compose_name(i[1], i[2])
+            if (action_request_value in self.max_id):
+                if (self.max_id[action_request_value][0]<extracted_data[1]):
+                    self.max_id[action_request_value]=[extracted_data[1], text_id]
+            else:
+                self.max_id[action_request_value]=[extracted_data[1], text_id]
+
             if i[0] == extracted_data[0]:
                 if (i[1], i[2]) in self.results.keys():
                     self.results[(i[1], i[2])][0].append(extracted_data[1])
@@ -191,7 +202,8 @@ class ExtractCandlepinData (ExtractData):
         for i, j in self.results.items():
             duration_values.append([self.compose_name(i[0], i[1]), j[0], j[1]])
         self.output.write_duration_values_list(duration_values,
-                                               "action: request_type")
+                                               "action: request_type",
+                                               self.max_id)
         print(f"\n\nMaximally {len(self.max_data)} concurrent requests when processing:")
         col_names = ["id", "action", "request_type"]
         print(tabulate(self.max_data, headers=col_names))
