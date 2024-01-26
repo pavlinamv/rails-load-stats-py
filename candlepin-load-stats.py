@@ -47,6 +47,10 @@ class ExtractCandlepinData (ExtractData):
         self.file_name = file_name
 
     @staticmethod
+    def compose_name(part1:str , part2: str):
+        return part1+(5-len(part1))*" "+":"+part2
+
+    @staticmethod
     def return_line_type(split_line: list):
         for line_type_identification, line_type_id in LINE_TYPE.items():
             for i in split_line:
@@ -185,7 +189,7 @@ class ExtractCandlepinData (ExtractData):
     def return_res(self):
         duration_values = []
         for i, j in self.results.items():
-            duration_values.append([i[0]+(5-len(i[0]))*" "+":"+i[1], j[0], j[1]])
+            duration_values.append([self.compose_name(i[0], i[1]), j[0], j[1]])
         self.output.write_duration_values_list(duration_values,
                                                "action: request_type")
         print(f"\n\nMaximally {len(self.max_data)} concurrent requests when processing:")
