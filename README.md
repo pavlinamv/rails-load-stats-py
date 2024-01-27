@@ -58,12 +58,12 @@ Example output:
 
     there were 149084 requests taking 2137814 ms (i.e. 0.59 hours, i.e. 0.02 days) in summary
 
-    action: request_type                                         count    min    max    avg    mean     sum    percentage
-    --  ---------------------------------------------------------  -------  -----  -----  -----  ------  ------  ------------
-    1  GET  :/candlepin/consumers/UUID/certificates/serials         25856      5   1714     23      14  594799         27.82
-    2  GET  :/candlepin/consumers/UUID                              16071      3    787     28      19  462696         21.64
-    3  GET  :/candlepin/consumers/UUID/content_overrides            34666      3    376      9       6  316487         14.8
-    4  GET  :/candlepin/consumers/UUID/accessible_content           16034      4    389     14       9  227700         10.65
+    action: request_type                                         count    min    max  -  max_id     avg    mean    sum    percentage
+    --  -------------------------------------------------------  -------  -----  -----  ---------  ------  -----  -------  ------------
+    1  GET  :/candlepin/consumers/UUID/certificates/serials      25856      5   1714  - 'aeadff82'   23      14   594799       27.82
+    2  GET  :/candlepin/consumers/UUID                           16071      3    787  - '2cf45a69'   28      19   462696       21.64
+    3  GET  :/candlepin/consumers/UUID/content_overrides         34666      3    376  - '254dcb99 '   9       6   316487       14.8
+    4  GET  :/candlepin/consumers/UUID/accessible_content        16034      4    389  - '9089b687'   14       9   227700       10.65
     ...
     ...
 
