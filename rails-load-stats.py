@@ -122,6 +122,12 @@ class ExtractRailsData(ExtractData):
                 i[2].append(entry[0])
                 return
 
+        if (entry[1] in self.max_id):
+            if (self.max_id[entry[1]][0]<duration):
+                self.max_id[entry[1]]=[duration, entry[0]]
+        else:
+            self.max_id[entry[1]]=[duration, entry[0]]
+
         duration_value = [entry[1], [duration], [entry[0]]]
         self.duration_values.append(duration_value)
 
