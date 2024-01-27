@@ -29,7 +29,29 @@ rails-load-stats-py is faster than the original bash version (especially for lar
 
 Example of usage:
 
-![Screenshot_2024-01-27_19-26-03__](https://github.com/pavlinamv/rails-load-stats-py/assets/22654167/115841cf-b72d-4d88-953e-cf1a0a0e4601)
+    Extracting data from the input file.
+    |███████████████████████████████| 100.0 %  Estimated time left: 1 sec       
+    there were 10 requests taking 1181 ms (i.e. 0.00 hours, i.e. 0.00 days) in summary
+
+        request_type                      count    min    max  -  max_id       avg    mean    sum    percentage
+    --  ------------------------------  -------  -----  -----  ------------  -----  ------  -----  ------------
+     1  PuppetcaController#index              5     94    357  - '2ac5eab2'    198     184    993         84.08
+     2  HostsController#index                 2     25     34  - '7aa5aeb2'     29      29     59          5
+     3  HostsController#externalNodes         1     57     57  - '980ab765'     57      57     57          4.83
+     4  CandlepinProxiesController#get        1     38     38  - '7d3b40e6'     38      38     38          3.22
+     5  UsersController#login                 1     34     34  - '7d3b40e3'     34      34     34          2.88
+    
+    Maximally 3 concurrent requests when processing:
+      Number  Time                 Request ID    Endpoint
+    --------  -------------------  ------------  ---------------------
+           0  2023-01-10T03:46:26  2ac9eab0      HostsController#index
+           1  2023-01-10T03:46:26  7aa5aeb2      HostsController#index
+           2  2023-01-10T03:46:26  2ac5eab0      HostsController#index
+
+    1 processing requests are not closed in the end of file:
+      Number     Pending time (s)  Time stamp           Request    IDEndpoint
+    --------  -------------------  -------------------  ---------  ---------------------
+           1                    0  2023-01-10T03:46:26  2ac5eab0   HostsController#index
 
 Now we can see the list of identificators + times spent on the request for any type of request. Request `PuppetcaController#index` (1st line in the previous table) is in `data_1.txt`, `HostsController#index` (2nd line) is in `data_2.txt`, ... 
 
