@@ -8,14 +8,14 @@ rails-load-stats.py is [rails-load-stats script](https://github.com/pmoravec/rai
 
 rails-load-stats-py is faster than the original bash version (especially for larger logfiles) and it contains some new features:
 - list of particular requests from the most busy time (processed with the most concurrency)
-- if "--without_stats" option is not used, it creates directory "`stats` + name of the input file" and for each request type it creates two files in the directory:
+- if "--with_stats" option is used, it creates directory "`stats` + name of the input file" and for each request type it creates two files in the directory:
     - plot with the times of all requests of the type (sorted by the timestamp of the request)
     - text file containing the time of the request and its unique id (sorted by the size of time spent on the request)
     
 
 ## Usage: 
-    rails-load-stats <FILE> [SORTING_TYPE] [--without_stats]
-    candlepin-load-stats <FILE> [SORTING_TYPE] [--without_stats]
+    rails-load-stats <FILE> [SORTING_TYPE] [--with_stats]
+    candlepin-load-stats <FILE> [SORTING_TYPE] [--with_stats]
 
         Possible sorting types are:
             1 or 'name': sort by the request_type
@@ -28,13 +28,13 @@ rails-load-stats-py is faster than the original bash version (especially for lar
 
 
 Example of usage:
-   
-![Screenshot_2023-05-10_06-211](https://github.com/pavlinamv/rails-load-stats-py/assets/22654167/f0f85965-def7-4ff9-9115-ce4ea6d85f63)
+
+![Screenshot_2024-01-27_19-26-03__](https://github.com/pavlinamv/rails-load-stats-py/assets/22654167/115841cf-b72d-4d88-953e-cf1a0a0e4601)
 
 Now we can see the list of identificators + times spent on the request for any type of request. Request `PuppetcaController#index` (1st line in the previous table) is in `data_1.txt`, `HostsController#index` (2nd line) is in `data_2.txt`, ... 
 
 ![Screenshot_2023-05-11_07-17-15](https://github.com/pavlinamv/rails-load-stats-py/assets/22654167/7d0b9bee-1e2b-4267-8fc5-0fc7000287d3)
-.
+
 Corresponding `.png` file for `PuppetcaController#index` is in `plot_2.png`. In the file times spent on the request is depicted according to time order of the requests.
 
 ![Screenshot_2023-05-10_06-37-56](https://github.com/pavlinamv/rails-load-stats-py/assets/22654167/d0d3dcb8-f268-4523-8fad-a586f33acbc1)
