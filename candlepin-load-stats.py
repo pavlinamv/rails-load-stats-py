@@ -217,7 +217,8 @@ class ExtractCandlepinData (ExtractData):
 
 
 def main() -> None:
-    extraction = ExtractCandlepinData(sys.argv[1])
+    parameters = "" if len(sys.argv)<2 else sys.argv[1]
+    extraction = ExtractCandlepinData(parameters)
     if extraction.init_error or (not extraction.process_log_file()):
         return
     extraction.return_res()

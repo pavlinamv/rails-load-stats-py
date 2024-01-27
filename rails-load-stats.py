@@ -187,7 +187,8 @@ def main() -> None:
 to analyze where the load to the app comes from. Inspired by:
 https://github.com/pmoravec/rails-load-stats
 """
-    extraction = ExtractRailsData(sys.argv[1])
+    parameters = "" if len(sys.argv)<2 else sys.argv[1]
+    extraction = ExtractRailsData(parameters)
     if extraction.init_error or (not extraction.process_log_file()):
         return
     extraction.return_res()
