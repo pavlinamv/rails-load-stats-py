@@ -69,7 +69,7 @@ Python version >= 3.6
 
 tabulate - library for printing tables
 
-mathplotlib - library for creating plots (if --without_stats is not used)
+mathplotlib - library for creating plots (if --with_stats is used)
 
 
 ## candlepin-load-stats.py
