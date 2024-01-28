@@ -29,6 +29,8 @@ rails-load-stats-py is faster than the original bash version (especially for lar
 
 Example of usage:
 
+    [localhost]$ ./rails-load-stats.py test.log --with_stats
+    
     Extracting data from the input file.
     |███████████████████████████████| 100.0 %  Estimated time left: 1 sec       
     there were 10 requests taking 1181 ms (i.e. 0.00 hours, i.e. 0.00 days) in summary
@@ -55,11 +57,25 @@ Example of usage:
 
 Now we can see the list of identificators + times spent on the request for any type of request. Request `PuppetcaController#index` (1st line in the previous table) is in `data_1.txt`, `HostsController#index` (2nd line) is in `data_2.txt`, ... 
 
-![Screenshot_2023-05-11_07-17-15](https://github.com/pavlinamv/rails-load-stats-py/assets/22654167/7d0b9bee-1e2b-4267-8fc5-0fc7000287d3)
+    [localhost]$ more stats_test.log/data_001.txt 
+    PuppetcaController#index
+    ------------------------
+    
+    Table of 'PuppetcaController#index' requests duration and its corresponding uniq
+    ue ID. The table is sorted by the size of duration in ascending order. 
+    
+    duration    request ID
+    ----------  --------------------------------
+         357     2ac5eab2
+         201     2ac5eab5
+         184     2ac5eab3
+         157     2ac5eab1
+          94     2ac5eab4
+
 
 Corresponding `.png` file for `PuppetcaController#index` is in `plot_2.png`. In the file times spent on the request is depicted according to time order of the requests.
 
-![Screenshot_2023-05-10_06-37-56](https://github.com/pavlinamv/rails-load-stats-py/assets/22654167/d0d3dcb8-f268-4523-8fad-a586f33acbc1)
+    [locahost]$ gimp stats_test.log/plot_001.txt
 
 ![plot_001](https://github.com/pavlinamv/rails-load-stats-py/assets/22654167/05484dae-1d45-48f5-b500-0f3c0b8dba89)
 
@@ -80,20 +96,20 @@ Example output:
 
     there were 149084 requests taking 2137814 ms (i.e. 0.59 hours, i.e. 0.02 days) in summary
 
-    action: request_type                                         count    min    max  -  max_id     avg    mean    sum    percentage
-    --  -------------------------------------------------------  -------  -----  -----  ---------  ------  -----  -------  ------------
-    1  GET  :/candlepin/consumers/UUID/certificates/serials      25856      5   1714  - 'aeadff82'   23      14   594799       27.82
-    2  GET  :/candlepin/consumers/UUID                           16071      3    787  - '2cf45a69'   28      19   462696       21.64
-    3  GET  :/candlepin/consumers/UUID/content_overrides         34666      3    376  - '254dcb99 '   9       6   316487       14.8
-    4  GET  :/candlepin/consumers/UUID/accessible_content        16034      4    389  - '9089b687'   14       9   227700       10.65
+    action: request_type                               count    min    max  -  max_id     avg    mean    sum    percentage
+    --  --------------------------------------------  -------  -----  -----  ---------  ------  -----  -------  ------------
+    1  GET  :/candlepin/cons/UUID/certificates         25856      5   1714  - 'aeadff82'   23      14   594799       27.82
+    2  GET  :/candlepin/cons/UUID                      16071      3    787  - '2cf45a69'   28      19   462696       21.64
+    3  GET  :/candlepin/cons/UUID/content_overrides    34666      3    376  - '254dcb99 '   9       6   316487       14.8
+    4  GET  :/candlepin/cons/UUID/accessible_content   16034      4    389  - '9089b687'   14       9   227700       10.65
     ...
     ...
 
     Maximally 2 concurrent requests when processing:
     id                                    action    request_type
-    ------------------------------------  --------  -----------------
-    3279f59f-c59d-46b5-824c-0d52f1c72538  GET       /candlepin/status
-    ab2a5a6c-d2f4-4557-a4f4-60ed760ddd61  GET       /candlepin/status
+    ------------------------------------  --------  --------------------
+    3279f59f-c59d-46b5-824c-0d52f1c72538  GET       /candlepin/cons/UUID
+    ab2a5a6c-d2f4-4557-a4f4-60ed760ddd61  GET       /candlepin/cons/UUID
 
     No processing request is open in the end of file.
     
