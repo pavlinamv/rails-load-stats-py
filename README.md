@@ -35,13 +35,13 @@ Example of usage:
     |███████████████████████████████| 100.0 %  Estimated time left: 1 sec       
     there were 10 requests taking 1181 ms (i.e. 0.00 hours, i.e. 0.00 days) in summary
 
-        request_type                      count    min    max  -  max_id       avg    mean    sum    percentage
-    --  ------------------------------  -------  -----  -----  ------------  -----  ------  -----  ------------
-     1  PuppetcaController#index              5     94    357  - '2ac5eab2'    198     184    993         84.08
-     2  HostsController#index                 2     25     34  - '7aa5aeb2'     29      29     59          5
-     3  HostsController#externalNodes         1     57     57  - '980ab765'     57      57     57          4.83
-     4  CandlepinProxiesController#get        1     38     38  - '7d3b40e6'     38      38     38          3.22
-     5  UsersController#login                 1     34     34  - '7d3b40e3'     34      34     34          2.88
+        request_type                    count   min    max  -  max_id     avg    mean  sum    percentage
+    --  ------------------------------  -----  -----  -----  ----------- -----  -----  -----  ----------
+     1  PuppetcaController#index            5    94    357  - '2ac5eab2'  198    184   993     84.08
+     2  HostsController#index               2    25     34  - '7aa5aeb2'   29     29    59      5
+     3  HostsController#externalNodes       1    57     57  - '980ab765'   57     57    57      4.83
+     4  CandlepinProxiesController#get      1    38     38  - '7d3b40e6'   38     38    38      3.22
+     5  UsersController#login               1    34     34  - '7d3b40e3'   34     34    34      2.88
     
     Maximally 3 concurrent requests when processing:
       Number  Time                 Request ID    Endpoint
@@ -96,12 +96,12 @@ Example output:
 
     there were 149084 requests taking 2137814 ms (i.e. 0.59 hours, i.e. 0.02 days) in summary
 
-    action: request_type                               count    min    max  -  max_id     avg    mean    sum    percentage
-    --  --------------------------------------------  -------  -----  -----  ---------  ------  -----  -------  ------------
-    1  GET  :/candlepin/cons/UUID/certificates         25856      5   1714  - 'aeadff82'   23      14   594799       27.82
-    2  GET  :/candlepin/cons/UUID                      16071      3    787  - '2cf45a69'   28      19   462696       21.64
-    3  GET  :/candlepin/cons/UUID/content_overrides    34666      3    376  - '254dcb99 '   9       6   316487       14.8
-    4  GET  :/candlepin/cons/UUID/accessible_content   16034      4    389  - '9089b687'   14       9   227700       10.65
+    action: request_type                          count    min    max  -  max_id     avg    mean    sum    percentage
+    --  ---------------------------------------  -------  -----  -----  ---------  ------  -----  -------  ------------
+    1  GET  :/candlepin/UUID/certificates         25856      5   1714  - 'aeadff82'   23      14   594799    27.82
+    2  GET  :/candlepin/UUID                      16071      3    787  - '2cf45a69'   28      19   462696    21.64
+    3  GET  :/candlepin/UUID/content_overrides    34666      3    376  - '254dcb99 '   9       6   316487    14.8
+    4  GET  :/candlepin/UUID/accessible_content   16034      4    389  - '9089b687'   14       9   227700    10.65
     ...
     ...
 
