@@ -8,7 +8,7 @@ MIN_RELEVANT_ELEMENTS = 1
 
 
 class TextOutput:
-    duration_values: list
+    output_values: list
     result_table: list
     whole_time: int
     number_of_tasks: int
@@ -18,10 +18,11 @@ class TextOutput:
     with_stats: int
     max_id: dict
 
-    def __init__(self, sorting_strategy: int, without_stats: int, file_name: str) -> None:
+    def __init__(self, sorting_strategy: int, without_stats: int, file_name: str, allocations: bool) -> None:
         self.sorting_strategy = sorting_strategy
         self.file_name = file_name
         self.with_stats = not without_stats
+        self.allocations = allocations
 
     @staticmethod
     def print_plot(title: str, values: list, plot_file_name ):
@@ -63,8 +64,8 @@ class TextOutput:
             pass
 
         pb = ProgressBarFromFileLines()
-        pb.set_number_of_entries(len(self.duration_values))
-        for (number, i) in enumerate(self.duration_values):
+        pb.set_number_of_entries(len(self.output_values))
+        for (number, i) in enumerate(self.output_values):
             pb.print_bar(number+1)
             line_number = 0
             for table_line in self.result_table:
@@ -82,13 +83,13 @@ class TextOutput:
 
 
     def fill_result_table(self) -> None:
-        self.number_of_tasks = sum((len(i[1])) for i in self.duration_values)
-        self.whole_time = sum((sum(i[1])) for i in self.duration_values)
+        self.number_of_tasks = sum((len(i[1])) for i in self.output_values)
+        self.whole_time = sum((sum(i[1])) for i in self.output_values)
 
         result_table = []
         if (self.number_of_tasks == 0) or (self.whole_time == 0):
             return
-        for (number, i) in enumerate(self.duration_values):
+        for (number, i) in enumerate(self.output_values):
             percentage = (sum(i[1]) / self.whole_time) * 100
             if i[0] not in self.max_id:
                 self.max_id[i[0]] = ['', 'in file'];
@@ -118,23 +119,27 @@ class TextOutput:
         self.result_table = enumerated_unsorted_table
 
 
-    def write_duration_values_list(self, duration_values: list,
-                                   entry_type_name: str,
-                                   max_id:dict) -> None:
+    def write_output_values_list(self, output_values: list,
+                                 entry_type_name: str,
+                                 max_id:dict) -> None:
 
-        self.duration_values = duration_values
+        self.output_values = output_values
         print("")
         self.max_id = max_id
         self.fill_result_table()
+        duration_stats = "" if self.allocations else \
+            f"(i.e. {self.whole_time/3600_000:.2f} hours, " \
+            f"i.e. {self.whole_time/3600_000/24:.2f} days) "
+
         print(f"there were {self.number_of_tasks} requests "
-              f"taking {self.whole_time} ms "
-              f"(i.e. {self.whole_time/3600_000:.2f} hours, "
-              f"i.e. {self.whole_time/3600_000/24:.2f} days) in summary\n")
+              f"{'allocating' if self.allocations else 'taking'} "
+              f"{self.whole_time} {'objects' if self.allocations else 'ms'} "
+              f"{duration_stats}in summary\n")
         col_names = ["", entry_type_name, "count",
                      "min", "max", "-  max_id", "avg",
                      "mean", "sum", "percentage"]
 
-        if len(self.duration_values) == 0:
+        if len(self.output_values) == 0:
             return
 
         print(tabulate(self.result_table, headers=col_names))

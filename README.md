@@ -11,10 +11,11 @@ rails-load-stats-py is faster than the original bash version (especially for lar
 - if "--with_stats" option is used, it creates directory "`stats` + name of the input file" and for each request type it creates two files in the directory:
     - plot with the times of all requests of the type (sorted by the timestamp of the request)
     - text file containing the time of the request and its unique id (sorted by the size of time spent on the request)
+- `--allocations` option to provide statistics over number of allocated objects and not the spent time. Useful for memory usage issues as a basic overview. BE AWARE: Statistics over allocations is kind of apples and oranges comparison; each allocated object can consume different amount of memory.
     
 
 ## Usage: 
-    rails-load-stats <FILE> [SORTING_TYPE] [--with_stats]
+    rails-load-stats <FILE> [SORTING_TYPE] [--with_stats] [--allocations]
     candlepin-load-stats <FILE> [SORTING_TYPE] [--with_stats]
 
         Possible sorting types are:
