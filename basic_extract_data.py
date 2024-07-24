@@ -8,14 +8,16 @@ class ExtractData:
 
     def __init__(self):
         self.output = None
+        self.allocations = False
 
     def init_file_extraction(self, file_name: str) -> bool:
         pp = ProcessParameters(ERROR)
-        ((sort_type, without_stats), correct) = pp.process_parameters()
+        ((sort_type, without_stats, allocs), correct) = pp.process_parameters()
+        self.allocations = allocs
         if not correct:
             pp.print_error_message()
             return False
-        self.output = TextOutput(sort_type, without_stats, file_name)
+        self.output = TextOutput(sort_type, without_stats, file_name, allocs)
         print("Extracting data from the input file.")
         return True
 

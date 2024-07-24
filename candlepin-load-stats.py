@@ -201,9 +201,9 @@ class ExtractCandlepinData (ExtractData):
         duration_values = []
         for i, j in self.results.items():
             duration_values.append([self.compose_name(i[0], i[1]), j[0], j[1]])
-        self.output.write_duration_values_list(duration_values,
-                                               "action: request_type",
-                                               self.max_id)
+        self.output.write_output_values_list(duration_values,
+                                             "action: request_type",
+                                             self.max_id)
         print(f"\n\nMaximally {len(self.max_data)} concurrent requests when processing:")
         col_names = ["id", "action", "request_type"]
         print(tabulate(self.max_data, headers=col_names))

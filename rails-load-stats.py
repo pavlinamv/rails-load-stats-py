@@ -10,8 +10,9 @@ from basic_extract_data import ExtractData
 COMPLETED = {'attributes': {2: "Completed"},
              'min_line_len': 6,
              'request_id_index': 1,
-             'min_duration_index': 3,
+             'min_extract_index': 3,
              'time_unit_length': 2,
+             'allocation_unit_length': 1,
              }
 PROCESSING = {'attributes': {2: "Processing", 3: "by"},
               'min_line_len': 5,
@@ -32,7 +33,7 @@ class ExtractRailsData(ExtractData):
     open_processing_entries: list
     max_open_proc_entries: list
     max_id: dict
-    duration_values: list
+    output_values: list
     line: list
     plot_data: list
     last_time: float
@@ -44,11 +45,20 @@ class ExtractRailsData(ExtractData):
         self.init_error = not(super().init_file_extraction(file_name))
         self.open_processing_entries = []
         self.max_open_proc_entries = []
-        self.duration_values = []
+        self.output_values = []
         self.line = []
         self.plot_data = []
         self.file_name = file_name
         self.max_id = {}
+        # a parsed line looks like:
+        # .. Completed 200 OK in 112601ms (Views: .. Allocations: 1166696)
+        # and we need to strip either value 112601 or 1166696
+        if self.allocations:
+            self.string_before_value = 'Allocations:'
+            self.value_unit_length = COMPLETED['allocation_unit_length']
+        else:
+            self.string_before_value = "in"
+            self.value_unit_length = COMPLETED['time_unit_length']
 
     def compute_and_log_time(self, line_time: str) -> float:
         date_time = re.split("T|:|-", line_time)
@@ -89,47 +99,46 @@ class ExtractRailsData(ExtractData):
             if len(self.max_open_proc_entries) < len(self.open_processing_entries):
                 self.max_open_proc_entries = self.open_processing_entries.copy()
 
-    def extract_duration_from_entry(self) -> int:
-        duration_position = NOT_FOUND_POSITION
-        for i in range(COMPLETED['min_duration_index']-1,
+    def extract_value_from_entry(self) -> int:
+        position = NOT_FOUND_POSITION
+        for i in range(COMPLETED['min_extract_index']-1,
                        len(self.line)-1):
-            if self.line[i] == 'in':
-                duration_position = i+1
+            if self.line[i] == self.string_before_value:
+                position = i+1
 
-        if duration_position == NOT_FOUND_POSITION:
+        if position == NOT_FOUND_POSITION:
             return NOT_FOUND_POSITION
         try:
-            duration = int(
-                self.line[duration_position][:-COMPLETED['time_unit_length']])
+            value = int(self.line[position][:-self.value_unit_length])
         except Exception as ex:
             print(ex)
             return NOT_FOUND_POSITION
-        return duration
+        return value
 
     def add_time_result(self, entry) -> None:
-        duration = self.extract_duration_from_entry()
-        if duration == NOT_FOUND_POSITION:
+        value = self.extract_value_from_entry()
+        if value == NOT_FOUND_POSITION:
             return
-        for i in self.duration_values:
+        for i in self.output_values:
             if (entry[1] in self.max_id):
-                if (self.max_id[entry[1]][0]<duration):
-                    self.max_id[entry[1]]=[duration, entry[0]]
+                if (self.max_id[entry[1]][0]<value):
+                    self.max_id[entry[1]]=[value, entry[0]]
             else:
-                self.max_id[entry[1]]=[duration, entry[0]]
+                self.max_id[entry[1]]=[value, entry[0]]
 
             if entry[1] == i[0]:
-                i[1].append(duration)
+                i[1].append(value)
                 i[2].append(entry[0])
                 return
 
         if (entry[1] in self.max_id):
-            if (self.max_id[entry[1]][0]<duration):
-                self.max_id[entry[1]]=[duration, entry[0]]
+            if (self.max_id[entry[1]][0]<value):
+                self.max_id[entry[1]]=[value, entry[0]]
         else:
-            self.max_id[entry[1]]=[duration, entry[0]]
+            self.max_id[entry[1]]=[value, entry[0]]
 
-        duration_value = [entry[1], [duration], [entry[0]]]
-        self.duration_values.append(duration_value)
+        output_value = [entry[1], [value], [entry[0]]]
+        self.output_values.append(output_value)
 
     def treat_completed_line(self) -> None:
         for entry in self.open_processing_entries:
@@ -159,9 +168,15 @@ class ExtractRailsData(ExtractData):
             self.treat_task_line()
 
     def return_res(self):
-        self.output.write_duration_values_list(self.duration_values,
-                                               "request_type",
-                                                self.max_id)
+        self.output.write_output_values_list(self.output_values,
+                                             "request_type",
+                                             self.max_id)
+        # in Allocations case, we are not interested in concurrency stats
+        if self.allocations:
+            print("\nBE AWARE: Statistics over allocations is kind of apples "
+                  "and oranges comparison; each allocated object can consume "
+                  "different amount of memory.\n\n")
+            return
         self.write_max_concurrent_processing()
         if len(self.open_processing_entries) == 0:
             print("\nNo processing requests are open in the end of file.\n")
