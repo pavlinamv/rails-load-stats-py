@@ -20,8 +20,8 @@ PROCESSING = {'attributes': {2: "Processing", 3: "by"},
               'communication_type_index': 4,
               'timestamp_index': 0,
               }
-TASK = {'attributes': {2: "Task"},
-        'min_line_len': 5,
+TASK = {'attributes': {2: "Task", 9: "state", 10: "changed:", 11: "stopped"},
+        'min_line_len': 13,
         }
 LINE_TYPE = (COMPLETED, PROCESSING, TASK)
 LINE_TYPE_NO = {}
